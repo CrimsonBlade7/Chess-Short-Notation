@@ -5,16 +5,12 @@ import model.Board;
 import model.pieces.piece_vars.Colour;
 import model.pieces.piece_vars.Type;
 
-public class Main
-{
+public class Main {
     public static Scanner input = new Scanner(System.in);
         
-    public static boolean playAgain()
-    {
-        while (true)
-        {
-            switch (input.nextLine().toLowerCase())
-            {
+    public static boolean playAgain() {
+        while (true) {
+            switch (input.nextLine().toLowerCase()) {
                 case "y":
                 case "yes":
                     return true;
@@ -31,13 +27,11 @@ public class Main
         }
     }
     
-    public static boolean gameIsOver()
-    {
+    public static boolean gameIsOver() {
         return false;
     }
     
-    public static void enterToContinue()
-    {
+    public static void enterToContinue() {
         System.out.println();
         System.out.println("----------[ENTER] to continue----------");
         System.out.println();
@@ -46,24 +40,21 @@ public class Main
     
     public static void clearScreen() { System.out.println("\033[H\033[2J"); }
     
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) {
+
         Board board = new Board();
         
         Colour currentColour = Colour.WHITE;
         String colour = "White";
         boolean running = true;
         
-        do
-        {
-            do
-            {
-                Move move = null;
-                while (move == null)
-                {
-                    board.printBoard();
+        do {
+            do {
+                boolean badMove = true;
+                while (badMove) {
+                    clearScreen();
+                    System.out.println(board.boardString());
                     System.out.print("    " + colour + " to move: ");
-                    move = Notation.stringToNotation(board, input.nextLine(), currentColour);
                     
                     if (move == null)
                     {

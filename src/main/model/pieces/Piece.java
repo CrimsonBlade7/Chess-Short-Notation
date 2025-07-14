@@ -8,8 +8,7 @@ public abstract class Piece {
     protected final Colour colour;
     private String name, symbol;
 
-    public Piece(Type type, Colour colour, String name, String symbol)
-    {
+    public Piece(Type type, Colour colour, String name, String symbol) {
         this.type = type;
         this.colour = colour;
         this.name = name;
