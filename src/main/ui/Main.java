@@ -1,9 +1,7 @@
 package ui;
 import java.util.*;
-
 import model.Board;
-import model.pieces.piece_vars.Colour;
-import model.pieces.piece_vars.Type;
+import model.misc_vars.Colour;
 
 public class Main {
     public static Scanner input = new Scanner(System.in);
@@ -45,40 +43,22 @@ public class Main {
         Board board = new Board();
         
         Colour currentColour = Colour.WHITE;
-        String colour = "White";
         boolean running = true;
         
         do {
-            do {
-                boolean badMove = true;
-                while (badMove) {
-                    clearScreen();
-                    System.out.println(board.boardString());
-                    System.out.print("    " + colour + " to move: ");
-                    
-                    if (move == null)
-                    {
-                        System.out.println();
-                        System.out.println("             Illegal Notation");
-                        enterToContinue();
-                    }
-                }
-                
-                if (board.move(move, currentColour))
-                {
-                    colour = (currentColour == Colour.WHITE) ? "Black" : "White";
-                    currentColour = (currentColour == Colour.WHITE) ? Colour.BLACK : Colour.WHITE;
-                }
-                else
-                {
-                    System.out.println();
-                    System.out.println("             Illegal Move");
-                    enterToContinue();
-                }
-            }
-            while (!gameIsOver());
-        }
-        while(playAgain());
+            clearScreen();
+            System.out.println(board);
+
+            System.out.print("Move: ");
+            int move = input.nextInt();
+            int ix = move / 1000 - 1;
+            int iy = move % 1000 / 100 - 1;
+            int fx = move % 100 / 10 - 1;
+            int fy = move % 10 - 1;
+            System.out.println();
+
+            board.move(ix, iy, fx, fy, currentColour);
+            currentColour = (currentColour == Colour.WHITE) ? Colour.BLACK : Colour.WHITE;
+        } while(running);
     }
-    
 }

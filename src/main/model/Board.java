@@ -1,9 +1,8 @@
 package model;
 import java.util.Scanner;
 
+import model.misc_vars.Colour;
 import model.pieces.*;
-import model.pieces.piece_vars.Colour;
-import model.pieces.piece_vars.Type;
 
 public class Board {
 
@@ -43,7 +42,7 @@ public class Board {
         }
     }
     
-    public String boardString() {
+    public String toString() {
 
         String result = "";
         result += "                  Chess\n";
@@ -58,7 +57,7 @@ public class Board {
                 else if (currentPiece.getColour() == Colour.BLACK) result += currentPiece.getSymbol().toLowerCase() + " | ";
                 else result += currentPiece.getSymbol() + " | ";
             }
-            result += "\n    |---|---|---|---|---|---|---|---|";
+            result += "\n    |---|---|---|---|---|---|---|---|\n";
         }
         result += "\n      a   b   c   d   e   f   g   h\n\n";
 
@@ -84,5 +83,7 @@ public class Board {
         return true;
     }
     
-    public Piece[][] getBoard() {return board;}
+    public Piece[][] getBoard() { return board; }
+
+    public Piece getSquare(int x, int y) { return board[y][x]; }
 }

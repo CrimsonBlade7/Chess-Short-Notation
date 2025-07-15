@@ -1,0 +1,3 @@
+package model.misc_vars;
+
+public enum MoveTag {CAPTURE, KINGSIDE_CASTLE, QUEENSIDE_CASTLE, PROMOTION, CHECK, CHECKMATE}

@@ -1,3 +1,3 @@
-package model.pieces.piece_vars;
+package model.misc_vars;
 
 public enum Colour {BLACK, WHITE}

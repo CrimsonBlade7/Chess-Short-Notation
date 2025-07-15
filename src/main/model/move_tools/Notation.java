@@ -1,13 +1,14 @@
-package model;
+package model.move_tools;
 
-import model.pieces.piece_vars.Colour;
-import model.pieces.piece_vars.Type;
+import model.Board;
+import model.misc_vars.Colour;
+import model.misc_vars.PieceType;
 
 public class Notation {
 
     public static void stringToNotation(Board board, String notation, Colour colour) {
         // Detect castling moves
-        int rank = (colour == Colour.WHITE) ? 0 : 7;
+        int row = (colour == Colour.WHITE) ? 0 : 7;
         boolean isCapture = false, isCheck = false, isMate = false;
         
         if (notation.contains("x")) 
@@ -50,34 +51,34 @@ public class Notation {
         // for (int i = 0; i < notation.length(); i++) if ("PNBRQKabcdefgh12345678x+=#O-".indexOf(notation.charAt(i)) == -1) return null;
         // if (notation.length() < 2 || notation.length() > 9) return null;
         
-        Type type;
+        PieceType type;
         int iX = -1, iY = -1, fX = -1, fY = -1;
         
         // Determine piece type
         switch (notation.charAt(0)) 
         {
             case 'K':
-                type = Type.KING;
+                type = PieceType.KING;
                 notation = notation.substring(1);
                 break;
             case 'Q':
-                type = Type.QUEEN;
+                type = PieceType.QUEEN;
                 notation = notation.substring(1);
                 break;
             case 'R':
-                type = Type.ROOK;
+                type = PieceType.ROOK;
                 notation = notation.substring(1);
                 break;
             case 'B':
-                type = Type.BISHOP;
+                type = PieceType.BISHOP;
                 notation = notation.substring(1);
                 break;
             case 'N':
-                type = Type.KNIGHT;
+                type = PieceType.KNIGHT;
                 notation = notation.substring(1);
                 break;
             default:
-                type = Type.PAWN;
+                type = PieceType.PAWN;
         }
         
         // Determine the end squre
