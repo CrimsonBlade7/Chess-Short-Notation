@@ -19,48 +19,23 @@ public class Bishop extends Piece {
     public List<Move> validMoves(Board board, int ix, int iy) {
         List<Move> validMoves = new ArrayList<>();
 
-        int fx = ix;
-        int fy = iy;
+        int[][] directions = {
+            {-1, 1},  // Top-left
+            {1, 1},   // Top-right
+            {-1, -1}, // Bottom-left
+            {1, -1}   // Bottom-right
+        };
 
-        boolean continueSearch;
-
-        // Check diagonal moves in all four directions
-        // Top-left diagonal
-        do {
-            fx--;
-            fy++;
-            continueSearch = addMove(ix, iy, fx, fy, board, validMoves);
-        } while (continueSearch);
-
-        fx = ix;
-        fy = iy;
-
-        // Top-right diagonal
-        do {
-            fx++;
-            fy++;
-            continueSearch = addMove(ix, iy, fx, fy, board, validMoves);
-        } while (continueSearch);
-
-        fx = ix;
-        fy = iy;
-
-        // Bottom-left diagonal
-        do {
-            fx--;
-            fy--;
-            continueSearch = addMove(ix, iy, fx, fy, board, validMoves);
-        } while (continueSearch);
-
-        fx = ix;
-        fy = iy;
-
-        // Bottom-right diagonal
-        do {
-            fx++;
-            fy--;
-            continueSearch = addMove(ix, iy, fx, fy, board, validMoves);
-        } while (continueSearch);
+        for (int[] dir : directions) {
+            int fx = ix;
+            int fy = iy;
+            boolean continueSearch;
+            do {
+                fx += dir[0];
+                fy += dir[1];
+                continueSearch = addMove(ix, iy, fx, fy, board, validMoves);
+            } while (continueSearch);
+        }
 
         return validMoves;
     }

@@ -9,12 +9,20 @@ import model.move_tools.Move;
 public class Pawn extends Piece {
     
     public Pawn(Colour colour) {
-        super(Type.PAWN, colour, "Pawn", "P");
+        super(PieceType.PAWN, colour, "Pawn", "P");
     }
 
     @Override
-    public Move[] validMoves() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'validMoves'");
+    public List<Move> validMoves(Board board, int ix, int iy) {
+        List<Move> validMoves = new ArrayList<>();
+
+        for (int fy = -1; fy <= 1; fy++) {
+            for (int fx = -1; fx <= 1; fx++) {
+                if (fx == 0 && fy == 0) { continue; } // Skip the current position
+                addMove(ix, iy, fx, fy, board, validMoves);
+            }
+        }
+
+        return validMoves;
     }
 }

@@ -16,14 +16,16 @@ public class Knight extends Piece {
     public List<Move> validMoves(Board board, int ix, int iy) {
         List<Move> validMoves = new ArrayList<>();
 
-        addMove(ix, iy, ix - 2, iy + 1, board, validMoves);
-        addMove(ix, iy, ix - 1, iy + 2, board, validMoves);
-        addMove(ix, iy, ix + 1, iy + 2, board, validMoves);
-        addMove(ix, iy, ix + 2, iy + 1, board, validMoves);
-        addMove(ix, iy, ix + 2, iy - 1, board, validMoves);
-        addMove(ix, iy, ix + 1, iy - 2, board, validMoves);
-        addMove(ix, iy, ix - 1, iy - 2, board, validMoves);
-        addMove(ix, iy, ix - 2, iy - 1, board, validMoves);
+        int[][] knightMoves = {
+            {-2, 1}, {-1, 2}, {1, 2}, {2, 1},
+            {2, -1}, {1, -2}, {-1, -2}, {-2, -1}
+        };
+
+        for (int[] move : knightMoves) {
+            int dx = move[0];
+            int dy = move[1];
+            addMove(ix, iy, ix + dx, iy + dy, board, validMoves);
+        }
 
         return validMoves;
     }
