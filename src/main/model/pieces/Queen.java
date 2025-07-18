@@ -8,13 +8,14 @@ import model.move_tools.Move;
 
 public class Queen extends Piece {
 
-    public Queen(Colour colour) {
-        super(PieceType.QUEEN, colour, "Queen", "Q");
+    public Queen(Colour colour, int x, int y) {
+        super(PieceType.QUEEN, colour, "Queen", "Q", x, y);
     }
 
     @Override
-    public List<Move> validMoves(Board board, int ix, int iy) {
-        List<Move> validMoves = new ArrayList<>();
+    public List<Move> possibleMoves(Board board) {
+
+        List<Move> possibleMoves = new ArrayList<>();
 
         int[][] directions = {
             {-1, 0},  // Up
@@ -28,16 +29,16 @@ public class Queen extends Piece {
         };
 
         for (int[] dir : directions) {
-            int fx = ix;
-            int fy = iy;
+            int fx = x;
+            int fy = y;
             boolean continueSearch;
             do {
                 fx += dir[0];
                 fy += dir[1];
-                continueSearch = addMove(ix, iy, fx, fy, board, validMoves);
+                continueSearch = addMove(x, y, fx, fy, board, possibleMoves);
             } while (continueSearch);
         }
 
-        return validMoves;
+        return possibleMoves;
     }
 }

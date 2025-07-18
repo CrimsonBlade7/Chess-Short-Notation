@@ -8,16 +8,14 @@ import model.move_tools.Move;
 
 public class Bishop extends Piece {
 
-    public Bishop(Colour colour) {
-        super(PieceType.BISHOP, colour, "Bishop", "B");
+    public Bishop(Colour colour, int x, int y) {
+        super(PieceType.BISHOP, colour, "Bishop", "B", x, y);
     }
 
-    //REQUIRES: board != null
-    //MODIFIES: validMoves
-    //EFFECTS: Returns a list of valid moves for the Bishop piece at position (ix, iy) on the given board
     @Override
-    public List<Move> validMoves(Board board, int ix, int iy) {
-        List<Move> validMoves = new ArrayList<>();
+    public List<Move> possibleMoves(Board board) {
+
+        List<Move> possibleMoves = new ArrayList<>();
 
         int[][] directions = {
             {-1, 1},  // Top-left
@@ -27,16 +25,16 @@ public class Bishop extends Piece {
         };
 
         for (int[] dir : directions) {
-            int fx = ix;
-            int fy = iy;
+            int fx = x;
+            int fy = y;
             boolean continueSearch;
             do {
                 fx += dir[0];
                 fy += dir[1];
-                continueSearch = addMove(ix, iy, fx, fy, board, validMoves);
+                continueSearch = addMove(x, y, fx, fy, board, possibleMoves);
             } while (continueSearch);
         }
 
-        return validMoves;
+        return possibleMoves;
     }
 }

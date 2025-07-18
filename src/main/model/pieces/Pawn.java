@@ -7,22 +7,38 @@ import model.misc_vars.*;
 import model.move_tools.Move;
 
 public class Pawn extends Piece {
+
+    boolean canPromote;
+    boolean canBeTakenByEnPassant;
     
-    public Pawn(Colour colour) {
-        super(PieceType.PAWN, colour, "Pawn", "P");
+    public Pawn(Colour colour, int x, int y) {
+        super(PieceType.PAWN, colour, "Pawn", "P", x, y);
     }
 
+    // TODO: Implement possibleMoves for pawn
     @Override
-    public List<Move> validMoves(Board board, int ix, int iy) {
-        List<Move> validMoves = new ArrayList<>();
+    public List<Move> possibleMoves(Board board) {
 
-        for (int fy = -1; fy <= 1; fy++) {
-            for (int fx = -1; fx <= 1; fx++) {
-                if (fx == 0 && fy == 0) { continue; } // Skip the current position
-                addMove(ix, iy, fx, fy, board, validMoves);
-            }
+        List<Move> possibleMoves = new ArrayList<>();
+
+        if (COLOUR == Colour.WHITE) {
+
+            // Move 2 squares on starting rank
+            if (y == 1 && board.getSquare(x, y + 2) == null) addMove(x, y, x, y + 2, board, possibleMoves); // Can move two squares forward from starting position
+            
+            // Normal move forward
+            if (board.getSquare(x, y + 1) == null) addMove(x, y, x, y + 1, board, possibleMoves);
+
+            // Capture moves diagonally
+            if (board.getSquare(x - 1, y + 1) != null) addMove(x, y, x - 1, y + 1, board, possibleMoves);
+            if (board.getSquare(x + 1, y + 1) != null) addMove(x, y, x + 1, y + 1, board, possibleMoves);
+
+        } else if (COLOUR == Colour.BLACK) {
+
+        } else {
+            throw new IllegalStateException("Invalid colour for Pawn: " + COLOUR);
         }
 
-        return validMoves;
+        return possibleMoves;
     }
 }

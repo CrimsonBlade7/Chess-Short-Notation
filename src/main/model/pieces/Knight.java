@@ -8,25 +8,32 @@ import model.move_tools.Move;
 
 public class Knight extends Piece {
 
-    public Knight(Colour colour) {
-        super(PieceType.KNIGHT, colour, "Knight", "N");
+    public Knight(Colour colour, int x, int y) {
+        super(PieceType.KNIGHT, colour, "Knight", "N", x, y);
     }
 
     @Override
-    public List<Move> validMoves(Board board, int ix, int iy) {
-        List<Move> validMoves = new ArrayList<>();
+    public List<Move> possibleMoves(Board board) {
+        
+        List<Move> possibleMoves = new ArrayList<>();
 
         int[][] knightMoves = {
-            {-2, 1}, {-1, 2}, {1, 2}, {2, 1},
-            {2, -1}, {1, -2}, {-1, -2}, {-2, -1}
+            {-2, 1}, 
+            {-1, 2}, 
+            {1, 2}, 
+            {2, 1},
+            {2, -1}, 
+            {1, -2}, 
+            {-1, -2}, 
+            {-2, -1}
         };
 
         for (int[] move : knightMoves) {
             int dx = move[0];
             int dy = move[1];
-            addMove(ix, iy, ix + dx, iy + dy, board, validMoves);
+            addMove(x, y, x + dx, y + dy, board, possibleMoves);
         }
 
-        return validMoves;
+        return possibleMoves;
     }
 }

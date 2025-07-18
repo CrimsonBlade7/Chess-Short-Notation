@@ -1,4 +1,5 @@
 package ui;
+
 import java.util.*;
 import model.Board;
 import model.misc_vars.Colour;
@@ -7,24 +8,26 @@ public class Main {
     public static Scanner input = new Scanner(System.in);
         
     public static boolean playAgain() {
+
         while (true) {
             switch (input.nextLine().toLowerCase()) {
-                case "y":
-                case "yes":
+                case "y", "yes" -> {
                     return true;
-                    
-                case "n":
-                case "no":
+                }
+                case "n", "no" -> {
                     return true;
+                }
                     
-                default:
+                default -> {
                     System.out.println("Invalid Input: Must be [yes/y] or [no/n]");
                     System.out.println();
                     enterToContinue();
+                }
             }
         }
     }
     
+    // TODO: implement gameIsOver
     public static boolean gameIsOver() {
         return false;
     }
@@ -57,7 +60,7 @@ public class Main {
             int fy = move % 10 - 1;
             System.out.println();
 
-            board.move(ix, iy, fx, fy, currentColour);
+            // board.move(ix, iy, fx, fy, currentColour);
             currentColour = (currentColour == Colour.WHITE) ? Colour.BLACK : Colour.WHITE;
         } while(running);
     }
