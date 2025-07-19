@@ -1,6 +1,5 @@
 package model.move_tools;
 
-import java.util.ArrayList;
 import model.Board;
 
 // Represents algebraic notation for chess moves.
@@ -8,7 +7,7 @@ public class MoveValidation {
 
     // TODO: Complete stringToMove method
     public static Move stringToMove(String moveString, Board board) {
-        return new Move(0, 0, 0, 0, false, new ArrayList<>()); // Placeholder implementation
+        return null; // Placeholder for future implementation
     }
 
     // REQUIRES: board != null

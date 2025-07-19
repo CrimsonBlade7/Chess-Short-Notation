@@ -13,7 +13,7 @@ public abstract class Piece {
     private final String NAME, SYMBOL;
     protected int x;
     protected int y;
-    
+
     public Piece(PieceType pieceType, Colour colour, String name, String symbol, int x, int y) {
         PIECE_TYPE = pieceType;
         COLOUR = colour;
@@ -22,27 +22,54 @@ public abstract class Piece {
         this.x = x;
         this.y = y;
     }
-    
-    public PieceType getPieceType() { return PIECE_TYPE; }
-    public Colour getColour() { return COLOUR; }
-    public String getSymbol() { return SYMBOL; }
-    public String getName() { return NAME; }
+
+    public PieceType getPieceType() {
+        return PIECE_TYPE;
+    }
+
+    public Colour getColour() {
+        return COLOUR;
+    }
+
+    public String getSymbol() {
+        return SYMBOL;
+    }
+
+    public String getName() {
+        return NAME;
+    }
 
     // REQUIRES: board != null
     // MODIFIES: possibleMoves
-    // EFFECTS: Returns a list of valid moves for this piece at position (x, y) on the given board.
+    // EFFECTS: Returns a list of valid moves for this piece at position (x, y) on
+    // the given board.
     public abstract List<Move> possibleMoves(Board board);
 
-    //REQUIRES: board != null
-    //MODIFIES: possibleMoves
-    //EFFECTS: Adds a move to possibleMoves if it is a legal move (within bounds and not capturing friendly piece)
-    protected boolean addMove(int ix, int iy, int fx, int fy, Board board, List<Move> possibleMoves) {
+    // REQUIRES: board != null
+    // MODIFIES: possibleMoves
+    // EFFECTS: Adds a move to possibleMoves if it is a legal move (within bounds
+    // and not capturing friendly piece)
+    protected boolean addMove(Piece piece, int ix, int iy, int fx, int fy, Board board, List<Move> possibleMoves) {
 
-        if (fx < 0 || fx > 7 || fy < 0 || fy > 7) return false; // Out of bounds
-        if (board.getSquare(fx, fy) != null && board.getSquare(fx, fy).getColour() == COLOUR) return false; // Friendly piece
+        if (fx < 0 || fx > 7 || fy < 0 || fy > 7) {
+            return false; // Out of bounds
+        }
 
-        boolean isCapture = board.getSquare(fx, fy) != null;
-        possibleMoves.add(new Move(ix, iy, fx, fy, isCapture, new ArrayList<>()));
+        Piece targetPiece = board.getSquare(fx, fy);
+
+        if (targetPiece != null && targetPiece.getColour() == COLOUR) {
+            return false; // Friendly piece
+        }
+
+        List<MoveTag> moveTags = new ArrayList<>();
+        if (targetPiece != null) {
+            if (targetPiece instanceof King) {
+                moveTags.add(MoveTag.CHECK);
+            } else {
+                moveTags.add(MoveTag.CAPTURE);
+            }
+        }
+        possibleMoves.add(new Move(piece, ix, iy, fx, fy, moveTags));
         return true;
     }
 

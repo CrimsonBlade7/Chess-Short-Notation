@@ -31,7 +31,7 @@ public class Rook extends Piece {
             do {
                 fx += dir[0];
                 fy += dir[1];
-                continueSearch = addMove(x, y, fx, fy, board, possibleMoves);
+                continueSearch = addMove(this, x, y, fx, fy, board, possibleMoves);
             } while (continueSearch);
         }
 

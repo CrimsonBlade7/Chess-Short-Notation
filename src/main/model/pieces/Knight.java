@@ -31,7 +31,7 @@ public class Knight extends Piece {
         for (int[] move : knightMoves) {
             int dx = move[0];
             int dy = move[1];
-            addMove(x, y, x + dx, y + dy, board, possibleMoves);
+            addMove(this, x, y, x + dx, y + dy, board, possibleMoves);
         }
 
         return possibleMoves;

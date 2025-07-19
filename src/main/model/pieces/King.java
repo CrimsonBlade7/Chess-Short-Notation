@@ -7,7 +7,7 @@ import model.misc_vars.*;
 import model.move_tools.Move;
 
 public class King extends Piece {
-    
+
     public King(Colour colour, int x, int y) {
         super(PieceType.KING, colour, "King", "K", x, y);
     }
@@ -19,8 +19,11 @@ public class King extends Piece {
 
         for (int fy = -1; fy <= 1; fy++) {
             for (int fx = -1; fx <= 1; fx++) {
-                if (fx == 0 && fy == 0) { continue; } // Skip the current position
-                addMove(x, y, fx, fy, board, possibleMoves);
+                if (fx == 0 && fy == 0) {
+                    continue;
+                } // Skip the current position
+                // TODO: can't move to a square that is under attack
+                addMove(this, x, y, fx, fy, board, possibleMoves);
             }
         }
 
