@@ -13,7 +13,7 @@ public class King extends Piece {
     }
 
     @Override
-    public List<Move> possibleMoves(Board board) {
+    public List<Move> possibleMoves(int x, int y, Board board) {
 
         List<Move> possibleMoves = new ArrayList<>();
 
@@ -23,10 +23,15 @@ public class King extends Piece {
                     continue;
                 } // Skip the current position
                 // TODO: can't move to a square that is under attack
-                addMove(this, x, y, fx, fy, board, possibleMoves);
+                addMove(x, y, fx, fy, board, possibleMoves);
             }
         }
 
         return possibleMoves;
+    }
+
+    @Override
+    public Piece copy() {
+        return new King(COLOUR, this.x, this.y);
     }
 }

@@ -52,14 +52,14 @@ public abstract class Piece {
     // MODIFIES: possibleMoves
     // EFFECTS: Returns a list of valid moves for this piece at position (x, y) on
     // the given board.
-    public abstract List<Move> possibleMoves(Board board);
+    public abstract List<Move> possibleMoves(int x, int y, Board board);
 
     // REQUIRES: board != null
     // MODIFIES: possibleMoves
     // EFFECTS: Adds a move to possibleMoves if it is a legal move (within bounds
     // and not capturing friendly piece).
     // Returns true if the move was added, false otherwise.
-    protected boolean addMove(Piece piece, int ix, int iy, int fx, int fy, Board board, List<Move> possibleMoves) {
+    protected boolean addMove(int ix, int iy, int fx, int fy, Board board, List<Move> possibleMoves) {
 
         if (fx < 0 || fx > 7 || fy < 0 || fy > 7) {
             return false; // Out of bounds
@@ -81,7 +81,7 @@ public abstract class Piece {
             }
         }
 
-        possibleMoves.add(new Move(piece, ix, iy, fx, fy, moveTags));
+        possibleMoves.add(new Move(this, COLOUR, ix, iy, fx, fy, moveTags));
         return true;
     }
 
@@ -92,4 +92,7 @@ public abstract class Piece {
         this.x = x == -1 ? this.x : x;
         this.y = y == -1 ? this.y : y;
     }
+
+
+    public abstract Piece copy();
 }

@@ -13,7 +13,7 @@ public class Knight extends Piece {
     }
 
     @Override
-    public List<Move> possibleMoves(Board board) {
+    public List<Move> possibleMoves(int x, int y, Board board) {
         
         List<Move> possibleMoves = new ArrayList<>();
 
@@ -31,9 +31,14 @@ public class Knight extends Piece {
         for (int[] move : knightMoves) {
             int dx = move[0];
             int dy = move[1];
-            addMove(this, x, y, x + dx, y + dy, board, possibleMoves);
+            addMove(x, y, x + dx, y + dy, board, possibleMoves);
         }
 
         return possibleMoves;
+    }
+
+    @Override
+    public Piece copy() {
+        return new Knight(COLOUR, this.x, this.y);
     }
 }

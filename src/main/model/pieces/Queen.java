@@ -13,7 +13,7 @@ public class Queen extends Piece {
     }
 
     @Override
-    public List<Move> possibleMoves(Board board) {
+    public List<Move> possibleMoves(int x, int y, Board board) {
 
         List<Move> possibleMoves = new ArrayList<>();
 
@@ -35,10 +35,15 @@ public class Queen extends Piece {
             do {
                 fx += dir[0];
                 fy += dir[1];
-                continueSearch = addMove(this, x, y, fx, fy, board, possibleMoves);
+                continueSearch = addMove(x, y, fx, fy, board, possibleMoves);
             } while (continueSearch);
         }
 
         return possibleMoves;
+    }
+
+    @Override
+    public Piece copy() {
+        return new Queen(COLOUR, this.x, this.y);
     }
 }

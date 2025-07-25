@@ -150,6 +150,10 @@ public class Board {
             throw new MoveMismatchException("Capture move attempted on an empty square.");
         }
 
+        if (move.getMoveTags().contains(MoveTag.CHECK) && !isCheck(move)) {
+            throw new MoveMismatchException("Check move attempted when not putting the opposing king in check.");
+        }
+
         board[fy][fx] = board[iy][ix];
         board[iy][ix] = null;
 
@@ -157,7 +161,7 @@ public class Board {
 
         return true;
     }
-
+    
     // TODO: remove later; temp method for testing
     public boolean move(int ix, int iy, int fx, int fy) {
 
@@ -165,10 +169,10 @@ public class Board {
         board[iy][ix] = null;
 
         board[fy][fx].setPosition(fx, fy);
-
+        
         return true;
     }
-
+    
     // REQUIRES: colour is either Colour.WHITE or Colour.BLACK
     // MODIFIES: board
     // EFFECTS: Resets the en passant flags for all pawns on the board
@@ -176,13 +180,35 @@ public class Board {
         if (colour != Colour.WHITE && colour != Colour.BLACK) {
             throw new IllegalArgumentException("Colour must be either WHITE or BLACK");
         }
-
+        
         List<Piece> pieceList = colour == Colour.WHITE ? whitePieces : blackPieces;
-
+        
         for (Piece piece : pieceList) {
             if (piece instanceof Pawn pawn) {
                 pawn.resetEnPassantFlag();
             }
         }
+    }
+
+    // REQUIRES: move.getMoveTags() contains MoveTag.CHECK
+    // EFFECTS: Checks if the move puts the opposing king in check
+    private boolean isCheck(Move move) {
+        int fx = move.getFx();
+        int fy = move.getFy();
+        // TODO: Implement logic to check if the move puts the opposing king in check
+        throw new UnsupportedOperationException("isCheck method not implemented yet.");
+    }
+
+    public Board copy() {
+        Board copy = new Board();
+        for (int y = 0; y < 8; y++) {
+            for (int x = 0; x < 8; x++) {
+                Piece piece = board[y][x];
+                if (piece != null) {
+                    copy.board[y][x] = piece.copy();
+                }
+            }
+        }
+        return copy;
     }
 }
