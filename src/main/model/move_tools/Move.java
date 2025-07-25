@@ -1,6 +1,6 @@
 package model.move_tools;
 
-import java.util.List;
+import java.util.Set;
 import model.misc_vars.MoveTag;
 import model.pieces.Piece;
 
@@ -8,9 +8,9 @@ import model.pieces.Piece;
 public class Move {
 
     private int ix, iy, fx, fy;
-    private List<MoveTag> moveTags;
+    private Set<MoveTag> moveTags;
 
-    public Move(Piece piece, int ix, int iy, int fx, int fy, List<MoveTag> moveTags) {
+    public Move(Piece piece, int ix, int iy, int fx, int fy, Set<MoveTag> moveTags) {
         this.ix = ix;
         this.iy = iy;
         this.fx = fx;
@@ -50,11 +50,11 @@ public class Move {
         this.fy = fy;
     }
 
-    public List<MoveTag> getMoveTag() {
+    public Set<MoveTag> getMoveTags() {
         return moveTags;
     }
 
-    public void setMoveTag(List<MoveTag> moveTags) {
+    public void setMoveTags(Set<MoveTag> moveTags) {
         this.moveTags = moveTags;
     }
 

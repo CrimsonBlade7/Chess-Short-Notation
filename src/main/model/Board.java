@@ -2,7 +2,9 @@ package model;
 
 import java.util.ArrayList;
 import java.util.List;
+import model.exceptions.MoveMismatchException;
 import model.misc_vars.Colour;
+import model.misc_vars.MoveTag;
 import model.move_tools.Move;
 import model.pieces.*;
 
@@ -137,12 +139,16 @@ public class Board {
     // MODIFIES: board
     // EFFECTS: Moves a piece from the initial square (ix, iy) to the final square
     // (fx, fy)
-    public boolean move(Move move) {
+    public boolean move(Move move) throws MoveMismatchException {
 
         int ix = move.getIx();
         int iy = move.getIy();
         int fx = move.getFx();
         int fy = move.getFy();
+
+        if (move.getMoveTags().contains(MoveTag.CAPTURE) && board[fy][fx] == null) {
+            throw new MoveMismatchException("Capture move attempted on an empty square.");
+        }
 
         board[fy][fx] = board[iy][ix];
         board[iy][ix] = null;

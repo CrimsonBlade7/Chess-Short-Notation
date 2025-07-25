@@ -1,7 +1,8 @@
 package model.pieces;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import model.Board;
 import model.misc_vars.*;
 import model.move_tools.Move;
@@ -39,6 +40,14 @@ public abstract class Piece {
         return NAME;
     }
 
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
     // REQUIRES: board != null
     // MODIFIES: possibleMoves
     // EFFECTS: Returns a list of valid moves for this piece at position (x, y) on
@@ -48,7 +57,8 @@ public abstract class Piece {
     // REQUIRES: board != null
     // MODIFIES: possibleMoves
     // EFFECTS: Adds a move to possibleMoves if it is a legal move (within bounds
-    // and not capturing friendly piece)
+    // and not capturing friendly piece).
+    // Returns true if the move was added, false otherwise.
     protected boolean addMove(Piece piece, int ix, int iy, int fx, int fy, Board board, List<Move> possibleMoves) {
 
         if (fx < 0 || fx > 7 || fy < 0 || fy > 7) {
@@ -61,22 +71,25 @@ public abstract class Piece {
             return false; // Friendly piece
         }
 
-        List<MoveTag> moveTags = new ArrayList<>();
+        Set<MoveTag> moveTags = new HashSet<>();
         if (targetPiece != null) {
             if (targetPiece instanceof King) {
+                // TODO: check if checkmate
                 moveTags.add(MoveTag.CHECK);
             } else {
                 moveTags.add(MoveTag.CAPTURE);
             }
         }
+
         possibleMoves.add(new Move(piece, ix, iy, fx, fy, moveTags));
         return true;
     }
 
     // MODIFIES: this
-    // EFFECTS: Sets the position of this piece to (x, y).
+    // EFFECTS: Sets the position of this piece to the given coordinates (x, y).
+    // If x or y is -1, the corresponding coordinate remains unchanged.
     public void setPosition(int x, int y) {
-        this.x = x;
-        this.y = y;
+        this.x = x == -1 ? this.x : x;
+        this.y = y == -1 ? this.y : y;
     }
 }
