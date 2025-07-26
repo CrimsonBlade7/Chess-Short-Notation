@@ -1,23 +1,21 @@
 package model.pieces;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import model.Board;
 import model.misc_vars.*;
-import model.move_tools.Move;
+import model.move_tools.Position;
 
 public class Bishop extends Piece {
 
-    public Bishop(Colour colour, int x, int y) {
-        super(PieceType.BISHOP, colour, "Bishop", "B", x, y);
+    public Bishop(Colour colour, Position pos) {
+        super(PieceType.BISHOP, colour, "Bishop", "B", pos);
     }
 
     @Override
-    public List<Move> legalMoves(Board board) {
+    public List<Position> validPositions(Board board) {
 
-        List<Move> legalMoves = new ArrayList<>();
+        List<Position> validPositionsList = new ArrayList<>();
 
         int[][] directions = { { -1, 1 }, // Top-left
                 { 1, 1 }, // Top-right
@@ -26,43 +24,22 @@ public class Bishop extends Piece {
         };
 
         for (int[] dir : directions) {
-            int fx = this.x;
-            int fy = this.y;
             boolean continueSearch = true;
+            Position pos = new Position(this.getX(), this.getY());
             do {
-                fx += dir[0];
-                fy += dir[1];
-
-                if (super.isValidMove(fx, fy, board)) {
-                    Board newBoard = board.copy();
-                    Bishop newBishop = (Bishop) this.copy();
-                    newBoard.move(this.x, this.y, fx, fy);
-                    addMove(fx, fy, board, newBoard, possibleMoves);
+                pos = new Position(pos.getX() + dir[0], pos.getY() + dir[1]);
+                if (super.isValidPosition(pos, board)) {
+                    validPositionsList.add(pos);
                 } else {
                     continueSearch = false; // Stop searching in this direction if the move is invalid
                 }
-
             } while (continueSearch);
         }
-
-        return possibleMoves;
-    }
-
-    // REQUIRES: ix, iy, fx, fy are within the bounds of the board (0 <= ix, iy, fx,
-    // fy < 8), board != null, board.getSquare(ix, iy) != <friendly piece>
-    // MODIFIES: possibleMoves
-    // EFFECTS: adds a move from (ix, iy) to (fx, fy) to possibleMoves
-    protected void addMove(int x, int y, Board board, Board newBoard, List<Move> possibleMoves) {
-        Move move = new Move(this, x, y, new HashSet<>());
-        if (board.getSquare(x, y) != null) {
-            move.addMoveTag(MoveTag.CAPTURE);
-        }
-        if (newBoard.getSquare(x, y).) {
-            possibleMoves.add(move);
+        return validPositionsList;
     }
 
     @Override
     public Piece copy() {
-        return new Bishop(COLOUR, this.x, this.y);
+        return new Bishop(COLOUR, this.pos);
     }
 }

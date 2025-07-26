@@ -6,6 +6,7 @@ import model.exceptions.MoveMismatchException;
 import model.misc_vars.Colour;
 import model.misc_vars.MoveTag;
 import model.move_tools.Move;
+import model.move_tools.Position;
 import model.pieces.*;
 
 public class Board {
@@ -27,14 +28,14 @@ public class Board {
         whitePieces = new ArrayList<>();
         blackPieces = new ArrayList<>();
 
-        Rook whiteRook1 = new Rook(Colour.WHITE, 0, 0);
-        Knight whiteKnight1 = new Knight(Colour.WHITE, 1, 0);
-        Bishop whiteBishop1 = new Bishop(Colour.WHITE, 2, 0);
-        Queen whiteQueen = new Queen(Colour.WHITE, 3, 0);
-        King whiteKing = new King(Colour.WHITE, 4, 0);
-        Bishop whiteBishop2 = new Bishop(Colour.WHITE, 5, 0);
-        Knight whiteKnight2 = new Knight(Colour.WHITE, 6, 0);
-        Rook whiteRook2 = new Rook(Colour.WHITE, 7, 0);
+        Rook whiteRook1 = new Rook(Colour.WHITE, new Position(0, 0));
+        Knight whiteKnight1 = new Knight(Colour.WHITE, new Position(1, 0));
+        Bishop whiteBishop1 = new Bishop(Colour.WHITE, new Position(2, 0));
+        Queen whiteQueen = new Queen(Colour.WHITE, new Position(3, 0));
+        King whiteKing = new King(Colour.WHITE, new Position(4, 0));
+        Bishop whiteBishop2 = new Bishop(Colour.WHITE, new Position(5, 0));
+        Knight whiteKnight2 = new Knight(Colour.WHITE, new Position(6, 0));
+        Rook whiteRook2 = new Rook(Colour.WHITE, new Position(7, 0));
 
         board[0][0] = whiteRook1;
         board[0][1] = whiteKnight1;
@@ -55,20 +56,20 @@ public class Board {
         whitePieces.add(whiteRook2);
 
         for (int i = 0; i < 8; i++) {
-            Pawn whitePawn = new Pawn(Colour.WHITE, i, 1);
+            Pawn whitePawn = new Pawn(Colour.WHITE, new Position(i, 1));
             board[1][i] = whitePawn;
             whitePieces.add(whitePawn);
         }
 
         // Initialize black pieces
-        Rook blackRook1 = new Rook(Colour.BLACK, 0, 7);
-        Knight blackKnight1 = new Knight(Colour.BLACK, 1, 7);
-        Bishop blackBishop1 = new Bishop(Colour.BLACK, 2, 7);
-        Queen blackQueen = new Queen(Colour.BLACK, 3, 7);
-        King blackKing = new King(Colour.BLACK, 4, 7);
-        Bishop blackBishop2 = new Bishop(Colour.BLACK, 5, 7);
-        Knight blackKnight2 = new Knight(Colour.BLACK, 6, 7);
-        Rook blackRook2 = new Rook(Colour.BLACK, 7, 7);
+        Rook blackRook1 = new Rook(Colour.BLACK, new Position(0, 7));
+        Knight blackKnight1 = new Knight(Colour.BLACK, new Position(1, 7));
+        Bishop blackBishop1 = new Bishop(Colour.BLACK, new Position(2, 7));
+        Queen blackQueen = new Queen(Colour.BLACK, new Position(3, 7));
+        King blackKing = new King(Colour.BLACK, new Position(4, 7));
+        Bishop blackBishop2 = new Bishop(Colour.BLACK, new Position(5, 7));
+        Knight blackKnight2 = new Knight(Colour.BLACK, new Position(6, 7));
+        Rook blackRook2 = new Rook(Colour.BLACK, new Position(7, 7));
 
         board[7][0] = blackRook1;
         board[7][1] = blackKnight1;
@@ -89,10 +90,18 @@ public class Board {
         blackPieces.add(blackRook2);
 
         for (int i = 0; i < 8; i++) {
-            Pawn blackPawn = new Pawn(Colour.BLACK, i, 6);
+            Pawn blackPawn = new Pawn(Colour.BLACK, new Position(i, 6));
             board[6][i] = blackPawn;
             blackPieces.add(blackPawn);
         }
+    }
+
+    public List<Piece> getWhitePieces() {
+        return whitePieces;
+    }
+
+    public List<Piece> getBlackPieces() {
+        return blackPieces;
     }
 
     // MODIFIES: board
@@ -105,8 +114,8 @@ public class Board {
         return board;
     }
 
-    public Piece getSquare(int x, int y) {
-        return board[y][x];
+    public Piece getSquare(Position pos) {
+        return board[pos.getY()][pos.getX()];
     }
 
     @Override
@@ -141,8 +150,8 @@ public class Board {
 
         int ix = move.PIECE.getX();
         int iy = move.PIECE.getY();
-        int fx = move.X;
-        int fy = move.Y;
+        int fx = move.getX();
+        int fy = move.getY();
 
         if (move.MOVE_TAGS.contains(MoveTag.CAPTURE) && board[fy][fx] == null) {
             throw new MoveMismatchException("Capture move attempted on an empty square.");
@@ -155,7 +164,7 @@ public class Board {
         board[fy][fx] = board[iy][ix];
         board[iy][ix] = null;
 
-        board[fy][fx].setPosition(fx, fy);
+        board[fy][fx].setPos(new Position(fx, fy));
 
         return true;
     }
@@ -166,7 +175,7 @@ public class Board {
         board[piece.getY()][piece.getX()] = null;
         board[fy][fx] = piece;
 
-        board[fy][fx].setPosition(fx, fy);
+        board[fy][fx].setPos(new Position(fx, fy));
 
         return true;
     }
@@ -191,8 +200,8 @@ public class Board {
     // REQUIRES: move.getMoveTags() contains MoveTag.CHECK
     // EFFECTS: Checks if the move puts the opposing king in check
     private boolean isCheck(Move move) {
-        int fx = move.X;
-        int fy = move.Y;
+        int fx = move.getX();
+        int fy = move.getY();
         // TODO: Implement logic to check if the move puts the opposing king in check
         throw new UnsupportedOperationException("isCheck method not implemented yet.");
     }

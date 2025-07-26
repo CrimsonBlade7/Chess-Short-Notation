@@ -4,18 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 import model.Board;
 import model.misc_vars.*;
-import model.move_tools.Move;
+import model.move_tools.Position;
 
 public class Knight extends Piece {
 
-    public Knight(Colour colour, int x, int y) {
-        super(PieceType.KNIGHT, colour, "Knight", "N", x, y);
+    public Knight(Colour colour, Position pos) {
+        super(PieceType.KNIGHT, colour, "Knight", "N", pos);
     }
 
     @Override
-    public List<Move> possibleMoves(int x, int y, Board board) {
-        
-        List<Move> possibleMoves = new ArrayList<>();
+    public List<Position> validPositions(Board board) {
+
+        List<Position> validPositionsList = new ArrayList<>();
 
         int[][] knightMoves = {
             {-2, 1}, 
@@ -29,16 +29,17 @@ public class Knight extends Piece {
         };
 
         for (int[] move : knightMoves) {
-            int dx = move[0];
-            int dy = move[1];
-            addMove(x, y, x + dx, y + dy, board, possibleMoves);
+            Position pos = new Position(this.getX() + move[0], this.getY() + move[1]);
+            if (isValidPosition(pos, board)) {
+                validPositionsList.add(pos);
+            }
         }
 
-        return possibleMoves;
+        return validPositionsList;
     }
 
     @Override
     public Piece copy() {
-        return new Knight(COLOUR, this.x, this.y);
+        return new Knight(COLOUR, this.pos);
     }
 }

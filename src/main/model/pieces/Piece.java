@@ -3,23 +3,21 @@ package model.pieces;
 import java.util.List;
 import model.Board;
 import model.misc_vars.*;
-import model.move_tools.Move;
+import model.move_tools.Position;
 
 // Represents a generic chess piece.
 public abstract class Piece {
     protected final PieceType PIECE_TYPE;
     protected final Colour COLOUR;
     private final String NAME, SYMBOL;
-    protected int x;
-    protected int y;
+    protected Position pos;
 
-    public Piece(PieceType pieceType, Colour colour, String name, String symbol, int x, int y) {
+    public Piece(PieceType pieceType, Colour colour, String name, String symbol, Position pos) {
         PIECE_TYPE = pieceType;
         COLOUR = colour;
         NAME = name;
         SYMBOL = symbol;
-        this.x = x;
-        this.y = y;
+        this.pos = pos;
     }
 
     public PieceType getPieceType() {
@@ -39,46 +37,46 @@ public abstract class Piece {
     }
 
     public int getX() {
-        return x;
+        return pos.getX();
     }
 
     public int getY() {
-        return y;
+        return pos.getY();
     }
-    
+
+    public Position getPos() {
+        return pos;
+    }
+
+    public void setPos(Position pos) {
+        this.pos = pos;
+    }
+
     // REQUIRES: x and y are within the bounds of the board (0 <= x, y < 8)
     // board != null
     // EFFECTS: returns a list of possible moves for the at position (x, y)
     // on the given board
-    public abstract List<Move> legalMoves(Board board);
+    public abstract List<Position> validPositions(Board board);
 
     // REQUIRES: board != null
-    // EFFECTS: Checks if the move to (x, y) is valid for this piece on the given board.
-    protected boolean isValidMove(int x, int y, Board board) {
+    // EFFECTS: Checks if the move to (x, y) is valid for this piece on the given
+    // board.
+    protected boolean isValidPosition(Position pos, Board board) {
+
+        int x = pos.getX();
+        int y = pos.getY();
 
         if (x < 0 || x > 7 || y < 0 || y > 7) {
             return false; // Move is out of bounds
         }
 
-        Piece targetPiece = board.getSquare(x, y);
+        Piece targetPiece = board.getSquare(pos);
 
         if (targetPiece != null && targetPiece.getColour() == COLOUR) {
             return false; // Cannot capture own piece
         }
 
         return true;
-    }
-
-    //
-    protected abstract void addMove(int ix, int iy, int fx, int fy, Board board, Board newBoard,
-            List<Move> possibleMoves);
-
-    // MODIFIES: this
-    // EFFECTS: Sets the position of this piece to the given coordinates (x, y).
-    // If x or y is -1, the corresponding coordinate remains unchanged.
-    public void setPosition(int x, int y) {
-        this.x = x == -1 ? this.x : x;
-        this.y = y == -1 ? this.y : y;
     }
 
     public abstract Piece copy();

@@ -4,34 +4,43 @@ import java.util.ArrayList;
 import java.util.List;
 import model.Board;
 import model.misc_vars.*;
-import model.move_tools.Move;
+import model.move_tools.Position;
 
 public class King extends Piece {
 
-    public King(Colour colour, int x, int y) {
-        super(PieceType.KING, colour, "King", "K", x, y);
+    private boolean canCastle;
+
+    public King(Colour colour, Position pos) {
+        super(PieceType.KING, colour, "King", "K", pos);
+        canCastle = true;
+    }
+
+    public King(Colour colour, Position pos, boolean canCastle) {
+        super(PieceType.KING, colour, "King", "K", pos);
+        this.canCastle = canCastle;
     }
 
     @Override
-    public List<Move> possibleMoves(int x, int y, Board board) {
+    public List<Position> validPositions(Board board) {
 
-        List<Move> possibleMoves = new ArrayList<>();
+        List<Position> validPositionsList = new ArrayList<>();
 
-        for (int fy = -1; fy <= 1; fy++) {
-            for (int fx = -1; fx <= 1; fx++) {
-                if (fx == 0 && fy == 0) {
+        for (int y = -1; y <= 1; y++) {
+            for (int x = -1; x <= 1; x++) {
+                if (x == 0 && y == 0) {
                     continue;
-                } // Skip the current position
-                // TODO: can't move to a square that is under attack
-                addMove(x, y, fx, fy, board, possibleMoves);
+                }
+                Position newPos = new Position(this.getX() + x, this.getY() + y);
+                if (super.isValidPosition(newPos, board)) {
+                    validPositionsList.add(newPos);
+                }
             }
         }
-
-        return possibleMoves;
+        return validPositionsList;
     }
 
     @Override
     public Piece copy() {
-        return new King(COLOUR, this.x, this.y);
+        return new King(COLOUR, this.pos, this.canCastle);
     }
 }

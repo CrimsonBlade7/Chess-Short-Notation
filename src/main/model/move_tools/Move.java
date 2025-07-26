@@ -8,14 +8,25 @@ import model.pieces.Piece;
 public class Move {
 
     public final Piece PIECE;
-    public final int X, Y;
+    public final Position POS;
     public final Set<MoveTag> MOVE_TAGS;
 
-    public Move(Piece piece, int x, int y, Set<MoveTag> moveTags) {
+    public Move(Piece piece, Position pos, Set<MoveTag> moveTags) {
         this.PIECE = piece;
-        this.X = x;
-        this.Y = y;
+        this.POS = pos;
         this.MOVE_TAGS = moveTags;
+    }
+
+    public Position getPos() {
+        return POS;
+    }
+
+    public int getX() {
+        return POS.getX();
+    }
+
+    public int getY() {
+        return POS.getY();
     }
 
     public void addMoveTag(MoveTag moveTag) {
