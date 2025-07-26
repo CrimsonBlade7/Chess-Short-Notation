@@ -1,8 +1,6 @@
 package model.move_tools;
 
 import java.util.Set;
-
-import model.misc_vars.Colour;
 import model.misc_vars.MoveTag;
 import model.pieces.Piece;
 
@@ -10,17 +8,13 @@ import model.pieces.Piece;
 public class Move {
 
     private final Piece PIECE;
-    private final Colour COLOUR;
-    private final int ix, iy, fx, fy;
+    private final int X, Y;
     private final Set<MoveTag> moveTags;
 
-    public Move(Piece piece, Colour colour, int ix, int iy, int fx, int fy, Set<MoveTag> moveTags) {
+    public Move(Piece piece, int x, int y, Set<MoveTag> moveTags) {
         this.PIECE = piece;
-        this.COLOUR = colour;
-        this.ix = ix;
-        this.iy = iy;
-        this.fx = fx;
-        this.fy = fy;
+        this.X = x;
+        this.Y = y;
         this.moveTags = moveTags;
     }
 
@@ -28,24 +22,20 @@ public class Move {
         return PIECE;
     }
 
-    public Colour getColour() {
-        return COLOUR;
-    }
-
     public int getIx() {
-        return ix;
+        return PIECE.getX();
     }
 
     public int getIy() {
-        return iy;
+        return PIECE.getY();
     }
 
     public int getFx() {
-        return fx;
+        return X;
     }
 
     public int getFy() {
-        return fy;
+        return Y;
     }
 
     public Set<MoveTag> getMoveTags() {

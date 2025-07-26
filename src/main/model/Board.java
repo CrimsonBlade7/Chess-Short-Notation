@@ -15,8 +15,6 @@ public class Board {
     List<Piece> blackPieces;
 
     public Board() {
-
-        // initialize board
         initializeBoard();
     }
 
@@ -96,20 +94,20 @@ public class Board {
             blackPieces.add(blackPawn);
         }
     }
-    
+
     // MODIFIES: board
     // EFFECTS: sets the board to the initial chess setup
     public void resetBoard() {
         initializeBoard();
     }
-    
-        public Piece[][] getBoard() {
-            return board;
-        }
-    
-        public Piece getSquare(int x, int y) {
-            return board[y][x];
-        }
+
+    public Piece[][] getBoard() {
+        return board;
+    }
+
+    public Piece getSquare(int x, int y) {
+        return board[y][x];
+    }
 
     @Override
     public String toString() {
@@ -161,7 +159,7 @@ public class Board {
 
         return true;
     }
-    
+
     // TODO: remove later; temp method for testing
     public boolean move(int ix, int iy, int fx, int fy) {
 
@@ -169,10 +167,10 @@ public class Board {
         board[iy][ix] = null;
 
         board[fy][fx].setPosition(fx, fy);
-        
+
         return true;
     }
-    
+
     // REQUIRES: colour is either Colour.WHITE or Colour.BLACK
     // MODIFIES: board
     // EFFECTS: Resets the en passant flags for all pawns on the board
@@ -180,9 +178,9 @@ public class Board {
         if (colour != Colour.WHITE && colour != Colour.BLACK) {
             throw new IllegalArgumentException("Colour must be either WHITE or BLACK");
         }
-        
+
         List<Piece> pieceList = colour == Colour.WHITE ? whitePieces : blackPieces;
-        
+
         for (Piece piece : pieceList) {
             if (piece instanceof Pawn pawn) {
                 pawn.resetEnPassantFlag();
@@ -199,6 +197,9 @@ public class Board {
         throw new UnsupportedOperationException("isCheck method not implemented yet.");
     }
 
+    // REQUIRES: board != null
+    // MODIFIES: board
+    // EFFECTS: Returns a deep copy of the board
     public Board copy() {
         Board copy = new Board();
         for (int y = 0; y < 8; y++) {

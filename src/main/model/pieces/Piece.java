@@ -1,8 +1,6 @@
 package model.pieces;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import model.Board;
 import model.misc_vars.*;
 import model.move_tools.Move;
@@ -47,43 +45,39 @@ public abstract class Piece {
     public int getY() {
         return y;
     }
+    
+    // REQUIRES: x and y are within the bounds of the board (0 <= x, y < 8)
+    // board != null
+    // EFFECTS: returns a list of possible squares for the at position (x, y)
+    // on the given board
+    protected abstract List<int[]> possibleSquares(int x, int y, Board board);
+    
+    // REQUIRES: x and y are within the bounds of the board (0 <= x, y < 8)
+    // board != null
+    // EFFECTS: returns a list of possible moves for the at position (x, y)
+    // on the given board
+    protected abstract List<Move> possibleMoves(List<int[]> possibleSquares, Board board);
 
     // REQUIRES: board != null
-    // MODIFIES: possibleMoves
-    // EFFECTS: Returns a list of valid moves for this piece at position (x, y) on
-    // the given board.
-    public abstract List<Move> possibleMoves(int x, int y, Board board);
+    // EFFECTS: Checks if the move to (x, y) is valid for this piece on the given board.
+    protected boolean isValidMove(int x, int y, Board board) {
 
-    // REQUIRES: board != null
-    // MODIFIES: possibleMoves
-    // EFFECTS: Adds a move to possibleMoves if it is a legal move (within bounds
-    // and not capturing friendly piece).
-    // Returns true if the move was added, false otherwise.
-    protected boolean addMove(int ix, int iy, int fx, int fy, Board board, List<Move> possibleMoves) {
-
-        if (fx < 0 || fx > 7 || fy < 0 || fy > 7) {
-            return false; // Out of bounds
+        if (x < 0 || x > 7 || y < 0 || y > 7) {
+            return false; // Move is out of bounds
         }
 
-        Piece targetPiece = board.getSquare(fx, fy);
+        Piece targetPiece = board.getSquare(x, y);
 
         if (targetPiece != null && targetPiece.getColour() == COLOUR) {
-            return false; // Friendly piece
+            return false; // Cannot capture own piece
         }
 
-        Set<MoveTag> moveTags = new HashSet<>();
-        if (targetPiece != null) {
-            if (targetPiece instanceof King) {
-                // TODO: check if checkmate
-                moveTags.add(MoveTag.CHECK);
-            } else {
-                moveTags.add(MoveTag.CAPTURE);
-            }
-        }
-
-        possibleMoves.add(new Move(this, COLOUR, ix, iy, fx, fy, moveTags));
         return true;
     }
+
+    //
+    protected abstract void addMove(int ix, int iy, int fx, int fy, Board board, Board newBoard,
+            List<Move> possibleMoves);
 
     // MODIFIES: this
     // EFFECTS: Sets the position of this piece to the given coordinates (x, y).
@@ -92,7 +86,6 @@ public abstract class Piece {
         this.x = x == -1 ? this.x : x;
         this.y = y == -1 ? this.y : y;
     }
-
 
     public abstract Piece copy();
 }
