@@ -7,42 +7,18 @@ import model.pieces.Piece;
 // Represents a move in the chess game.
 public class Move {
 
-    private final Piece PIECE;
-    private final int X, Y;
-    private final Set<MoveTag> moveTags;
+    public final Piece PIECE;
+    public final int X, Y;
+    public final Set<MoveTag> MOVE_TAGS;
 
     public Move(Piece piece, int x, int y, Set<MoveTag> moveTags) {
         this.PIECE = piece;
         this.X = x;
         this.Y = y;
-        this.moveTags = moveTags;
-    }
-
-    public Piece getPiece() {
-        return PIECE;
-    }
-
-    public int getIx() {
-        return PIECE.getX();
-    }
-
-    public int getIy() {
-        return PIECE.getY();
-    }
-
-    public int getFx() {
-        return X;
-    }
-
-    public int getFy() {
-        return Y;
-    }
-
-    public Set<MoveTag> getMoveTags() {
-        return moveTags;
+        this.MOVE_TAGS = moveTags;
     }
 
     public void addMoveTag(MoveTag moveTag) {
-        moveTags.add(moveTag);
+        MOVE_TAGS.add(moveTag);
     }
 }

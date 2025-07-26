@@ -139,16 +139,16 @@ public class Board {
     // (fx, fy)
     public boolean move(Move move) throws MoveMismatchException {
 
-        int ix = move.getIx();
-        int iy = move.getIy();
-        int fx = move.getFx();
-        int fy = move.getFy();
+        int ix = move.PIECE.getX();
+        int iy = move.PIECE.getY();
+        int fx = move.X;
+        int fy = move.Y;
 
-        if (move.getMoveTags().contains(MoveTag.CAPTURE) && board[fy][fx] == null) {
+        if (move.MOVE_TAGS.contains(MoveTag.CAPTURE) && board[fy][fx] == null) {
             throw new MoveMismatchException("Capture move attempted on an empty square.");
         }
 
-        if (move.getMoveTags().contains(MoveTag.CHECK) && !isCheck(move)) {
+        if (move.MOVE_TAGS.contains(MoveTag.CHECK) && !isCheck(move)) {
             throw new MoveMismatchException("Check move attempted when not putting the opposing king in check.");
         }
 
@@ -161,10 +161,10 @@ public class Board {
     }
 
     // TODO: remove later; temp method for testing
-    public boolean move(int ix, int iy, int fx, int fy) {
+    public boolean move(Piece piece, int fx, int fy) {
 
-        board[fy][fx] = board[iy][ix];
-        board[iy][ix] = null;
+        board[piece.getY()][piece.getX()] = null;
+        board[fy][fx] = piece;
 
         board[fy][fx].setPosition(fx, fy);
 
@@ -191,8 +191,8 @@ public class Board {
     // REQUIRES: move.getMoveTags() contains MoveTag.CHECK
     // EFFECTS: Checks if the move puts the opposing king in check
     private boolean isCheck(Move move) {
-        int fx = move.getFx();
-        int fy = move.getFy();
+        int fx = move.X;
+        int fy = move.Y;
         // TODO: Implement logic to check if the move puts the opposing king in check
         throw new UnsupportedOperationException("isCheck method not implemented yet.");
     }

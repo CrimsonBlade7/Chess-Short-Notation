@@ -48,15 +48,9 @@ public abstract class Piece {
     
     // REQUIRES: x and y are within the bounds of the board (0 <= x, y < 8)
     // board != null
-    // EFFECTS: returns a list of possible squares for the at position (x, y)
-    // on the given board
-    protected abstract List<int[]> possibleSquares(int x, int y, Board board);
-    
-    // REQUIRES: x and y are within the bounds of the board (0 <= x, y < 8)
-    // board != null
     // EFFECTS: returns a list of possible moves for the at position (x, y)
     // on the given board
-    protected abstract List<Move> possibleMoves(List<int[]> possibleSquares, Board board);
+    public abstract List<Move> legalMoves(Board board);
 
     // REQUIRES: board != null
     // EFFECTS: Checks if the move to (x, y) is valid for this piece on the given board.

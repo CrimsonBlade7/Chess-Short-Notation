@@ -15,39 +15,9 @@ public class Bishop extends Piece {
     }
 
     @Override
-    public List<Move> possibleSquares(int ix, int iy, Board board) {
+    public List<Move> legalMoves(Board board) {
 
-        List<int[]> possibleSquares = new ArrayList<>();
-
-        int[][] directions = { { -1, 1 }, // Top-left
-                { 1, 1 }, // Top-right
-                { -1, -1 }, // Bottom-left
-                { 1, -1 } // Bottom-right
-        };
-
-        for (int[] dir : directions) {
-            int fx = ix;
-            int fy = iy;
-            boolean continueSearch = true;
-            do {
-                fx += dir[0];
-                fy += dir[1];
-
-                if (super.isValidMove(fx, fy, board)) {
-                    int[] square = { fx, fy };
-                    possibleSquares.add(square);
-                }
-
-            } while (continueSearch);
-        }
-
-        return possibleMoves;
-    }
-
-    @Override
-    public List<Move> possibleMoves(int ix, int iy, Board board) {
-
-        List<Move> possibleMoves = new ArrayList<>();
+        List<Move> legalMoves = new ArrayList<>();
 
         int[][] directions = { { -1, 1 }, // Top-left
                 { 1, 1 }, // Top-right
@@ -56,8 +26,8 @@ public class Bishop extends Piece {
         };
 
         for (int[] dir : directions) {
-            int fx = ix;
-            int fy = iy;
+            int fx = this.x;
+            int fy = this.y;
             boolean continueSearch = true;
             do {
                 fx += dir[0];
@@ -65,7 +35,8 @@ public class Bishop extends Piece {
 
                 if (super.isValidMove(fx, fy, board)) {
                     Board newBoard = board.copy();
-                    newBoard.move(x, y, fx, fy);
+                    Bishop newBishop = (Bishop) this.copy();
+                    newBoard.move(this.x, this.y, fx, fy);
                     addMove(fx, fy, board, newBoard, possibleMoves);
                 } else {
                     continueSearch = false; // Stop searching in this direction if the move is invalid
