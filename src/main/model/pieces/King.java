@@ -2,7 +2,6 @@ package model.pieces;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import model.Board;
 import model.misc_vars.Colour;
 import model.misc_vars.PieceType;
@@ -38,8 +37,34 @@ public class King extends Piece {
                 }
             }
         }
-        // TODO: Add logic for castling
+
+        // Check for castling kingside
+        if (canCastle(1, board)) {
+            validPositionsList.add(new Position(this.getX() + 2, this.getY()));
+        }
+        
+        // Check for castling queenside
+        if (canCastle(-1, board)) {
+            validPositionsList.add(new Position(this.getX() - 2, this.getY()));
+        }
+        
         return validPositionsList;
+    }
+
+    // REQUIRES: direction is either 1 (kingside) or -1 (queenside)
+    // EFFECTS: returns true if castling is possible in the given direction, false
+    // otherwise
+    private boolean canCastle(int direction, Board board) {
+        int startingRank = this.getColour() == Colour.WHITE ? 0 : 7;
+        if (this.canCastle && board.getSquare(new Position(7, startingRank)) instanceof Rook rook && rook.canCastle()) {
+            for (int x = 4 + direction; x > 1 && x < 7; x++) {
+                Position pos = new Position(x, startingRank);
+                if (!this.isEmptySquare(pos, board)) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     @Override
@@ -65,7 +90,5 @@ public class King extends Piece {
     }
 
     @Override
-    public Piece copy() {
-        return new King(COLOUR, this.pos, this.canCastle);
-    }
+    public Piece copy() { return new King(COLOUR, this.pos, this.canCastle); }
 }

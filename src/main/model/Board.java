@@ -169,17 +169,6 @@ public class Board {
         return true;
     }
 
-    // TODO: remove later; temp method for testing
-    public boolean move(Piece piece, int fx, int fy) {
-
-        board[piece.getY()][piece.getX()] = null;
-        board[fy][fx] = piece;
-
-        board[fy][fx].setPos(new Position(fx, fy));
-
-        return true;
-    }
-
     // REQUIRES: colour is either Colour.WHITE or Colour.BLACK
     // MODIFIES: board
     // EFFECTS: Resets the en passant flags for all pawns on the board
