@@ -2,8 +2,10 @@ package model.pieces;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import model.Board;
-import model.misc_vars.*;
+import model.misc_vars.Colour;
+import model.misc_vars.PieceType;
 import model.move_tools.Position;
 
 public class Rook extends Piece {
@@ -18,6 +20,28 @@ public class Rook extends Piece {
     public Rook(Colour colour, Position pos, boolean canCastle) {
         super(PieceType.ROOK, colour, "Rook", "R", pos);
         this.canCastle = canCastle;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + (canCastle ? 1231 : 1237);
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!super.equals(obj))
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Rook other = (Rook) obj;
+        if (canCastle != other.canCastle)
+            return false;
+        return true;
     }
 
     public boolean canCastle() {
@@ -46,6 +70,9 @@ public class Rook extends Piece {
                 pos = new Position(pos.getX() + dir[0], pos.getY() + dir[1]);
                 if (super.isValidPosition(pos, board)) {
                     validPositionsList.add(pos);
+                    if (!this.isEmptySquare(pos, board)) {
+                        continueSearch = false; // Stop searching in this direction if the move is a capture
+                    }
                 } else {
                     continueSearch = false; // Stop searching in this direction if the move is invalid
                 }

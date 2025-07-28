@@ -2,8 +2,10 @@ package model.pieces;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import model.Board;
-import model.misc_vars.*;
+import model.misc_vars.Colour;
+import model.misc_vars.PieceType;
 import model.move_tools.Position;
 
 public class Knight extends Piece {
@@ -17,16 +19,8 @@ public class Knight extends Piece {
 
         List<Position> validPositionsList = new ArrayList<>();
 
-        int[][] knightMoves = {
-            {-2, 1}, 
-            {-1, 2}, 
-            {1, 2}, 
-            {2, 1},
-            {2, -1}, 
-            {1, -2}, 
-            {-1, -2}, 
-            {-2, -1}
-        };
+        int[][] knightMoves = { { -2, 1 }, { -1, 2 }, { 1, 2 }, { 2, 1 }, { 2, -1 }, { 1, -2 }, { -1, -2 },
+                { -2, -1 } };
 
         for (int[] move : knightMoves) {
             Position pos = new Position(this.getX() + move[0], this.getY() + move[1]);

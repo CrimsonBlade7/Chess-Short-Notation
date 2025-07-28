@@ -2,8 +2,10 @@ package model.pieces;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import model.Board;
-import model.misc_vars.*;
+import model.misc_vars.Colour;
+import model.misc_vars.PieceType;
 import model.move_tools.Position;
 
 public class King extends Piece {
@@ -36,7 +38,30 @@ public class King extends Piece {
                 }
             }
         }
+        // TODO: Add logic for castling
         return validPositionsList;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + (canCastle ? 1231 : 1237);
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!super.equals(obj))
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        King other = (King) obj;
+        if (canCastle != other.canCastle)
+            return false;
+        return true;
     }
 
     @Override

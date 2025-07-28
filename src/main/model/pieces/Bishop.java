@@ -2,8 +2,10 @@ package model.pieces;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import model.Board;
-import model.misc_vars.*;
+import model.misc_vars.Colour;
+import model.misc_vars.PieceType;
 import model.move_tools.Position;
 
 public class Bishop extends Piece {
@@ -30,6 +32,9 @@ public class Bishop extends Piece {
                 pos = new Position(pos.getX() + dir[0], pos.getY() + dir[1]);
                 if (super.isValidPosition(pos, board)) {
                     validPositionsList.add(pos);
+                    if (!this.isEmptySquare(pos, board)) {
+                        continueSearch = false; // Stop searching in this direction if the move is a capture
+                    }
                 } else {
                     continueSearch = false; // Stop searching in this direction if the move is invalid
                 }

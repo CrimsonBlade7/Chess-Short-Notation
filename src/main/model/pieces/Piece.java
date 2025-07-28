@@ -1,8 +1,10 @@
 package model.pieces;
 
 import java.util.List;
+
 import model.Board;
-import model.misc_vars.*;
+import model.misc_vars.Colour;
+import model.misc_vars.PieceType;
 import model.move_tools.Position;
 
 // Represents a generic chess piece.
@@ -58,9 +60,61 @@ public abstract class Piece {
     // on the given board
     public abstract List<Position> validPositions(Board board);
 
+    @Override
+    public String toString() {
+        return "Piece [PIECE_TYPE=" + PIECE_TYPE + ", COLOUR=" + COLOUR + ", NAME=" + NAME + ", SYMBOL=" + SYMBOL
+                + ", pos=" + pos + "]";
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((PIECE_TYPE == null) ? 0 : PIECE_TYPE.hashCode());
+        result = prime * result + ((COLOUR == null) ? 0 : COLOUR.hashCode());
+        result = prime * result + ((NAME == null) ? 0 : NAME.hashCode());
+        result = prime * result + ((SYMBOL == null) ? 0 : SYMBOL.hashCode());
+        result = prime * result + ((pos == null) ? 0 : pos.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Piece other = (Piece) obj;
+        if (PIECE_TYPE != other.PIECE_TYPE)
+            return false;
+        if (COLOUR != other.COLOUR)
+            return false;
+        if (NAME == null) {
+            if (other.NAME != null)
+                return false;
+        } else if (!NAME.equals(other.NAME))
+            return false;
+        if (SYMBOL == null) {
+            if (other.SYMBOL != null)
+                return false;
+        } else if (!SYMBOL.equals(other.SYMBOL))
+            return false;
+        if (pos == null) {
+            if (other.pos != null)
+                return false;
+        } else if (!pos.equals(other.pos))
+            return false;
+        return true;
+    }
+
+    public abstract Piece copy();
+
     // REQUIRES: board != null
-    // EFFECTS: Checks if the move to (x, y) is valid for this piece on the given
-    // board.
+    // EFFECTS: Checks if the move to pos is not friendly and is within the bounds
+    // of the board.
+    // If the position is valid, returns true; otherwise, returns false.
     protected boolean isValidPosition(Position pos, Board board) {
 
         int x = pos.getX();
@@ -79,5 +133,10 @@ public abstract class Piece {
         return true;
     }
 
-    public abstract Piece copy();
+    // REQUIRES: pos is within the bounds of the board (0 <= x, y < 8)
+    // board != null
+    // EFFECTS: returns true if the position is empty, false otherwise
+    protected boolean isEmptySquare(Position pos, Board board) {
+        return board.getSquare(pos) == null;
+    }
 }
