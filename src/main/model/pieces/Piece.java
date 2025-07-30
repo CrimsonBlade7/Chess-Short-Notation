@@ -4,55 +4,34 @@ import java.util.List;
 
 import model.Board;
 import model.misc_vars.Colour;
-import model.misc_vars.PieceType;
 import model.move_tools.Position;
 
 // Represents a generic chess piece.
 public abstract class Piece {
-    protected final PieceType PIECE_TYPE;
     protected final Colour COLOUR;
     private final String NAME, SYMBOL;
     protected Position pos;
 
-    public Piece(PieceType pieceType, Colour colour, String name, String symbol, Position pos) {
-        PIECE_TYPE = pieceType;
+    public Piece(Colour colour, String name, String symbol, Position pos) {
         COLOUR = colour;
         NAME = name;
         SYMBOL = symbol;
         this.pos = pos;
     }
 
-    public PieceType getPieceType() {
-        return PIECE_TYPE;
-    }
+    public Colour getColour() { return COLOUR; }
 
-    public Colour getColour() {
-        return COLOUR;
-    }
+    public String getSymbol() { return SYMBOL; }
 
-    public String getSymbol() {
-        return SYMBOL;
-    }
+    public String getName() { return NAME; }
 
-    public String getName() {
-        return NAME;
-    }
+    public int getX() { return pos.getX(); }
 
-    public int getX() {
-        return pos.getX();
-    }
+    public int getY() { return pos.getY(); }
 
-    public int getY() {
-        return pos.getY();
-    }
+    public Position getPos() { return pos; }
 
-    public Position getPos() {
-        return pos;
-    }
-
-    public void setPos(Position pos) {
-        this.pos = pos;
-    }
+    public void setPos(Position pos) { this.pos = pos; }
 
     // REQUIRES: x and y are within the bounds of the board (0 <= x, y < 8)
     // board != null
@@ -62,7 +41,7 @@ public abstract class Piece {
 
     @Override
     public String toString() {
-        return "Piece [PIECE_TYPE=" + PIECE_TYPE + ", COLOUR=" + COLOUR + ", NAME=" + NAME + ", SYMBOL=" + SYMBOL
+        return "Piece [ COLOUR=" + COLOUR + ", NAME=" + NAME + ", SYMBOL=" + SYMBOL
                 + ", pos=" + pos + "]";
     }
 
@@ -70,7 +49,6 @@ public abstract class Piece {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((PIECE_TYPE == null) ? 0 : PIECE_TYPE.hashCode());
         result = prime * result + ((COLOUR == null) ? 0 : COLOUR.hashCode());
         result = prime * result + ((NAME == null) ? 0 : NAME.hashCode());
         result = prime * result + ((SYMBOL == null) ? 0 : SYMBOL.hashCode());
@@ -87,8 +65,6 @@ public abstract class Piece {
         if (getClass() != obj.getClass())
             return false;
         Piece other = (Piece) obj;
-        if (PIECE_TYPE != other.PIECE_TYPE)
-            return false;
         if (COLOUR != other.COLOUR)
             return false;
         if (NAME == null) {
@@ -136,7 +112,5 @@ public abstract class Piece {
     // REQUIRES: pos is within the bounds of the board (0 <= x, y < 8)
     // board != null
     // EFFECTS: returns true if the position is empty, false otherwise
-    protected boolean isEmptySquare(Position pos, Board board) {
-        return board.getSquare(pos) == null;
-    }
+    protected boolean isEmptySquare(Position pos, Board board) { return board.getSquare(pos) == null; }
 }

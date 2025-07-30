@@ -5,7 +5,6 @@ import java.util.List;
 
 import model.Board;
 import model.misc_vars.Colour;
-import model.misc_vars.PieceType;
 import model.move_tools.Position;
 
 public class Rook extends Piece {
@@ -13,12 +12,12 @@ public class Rook extends Piece {
     private boolean canCastle;
 
     public Rook(Colour colour, Position pos) {
-        super(PieceType.ROOK, colour, "Rook", "R", pos);
+        super(colour, "Rook", "R", pos);
         canCastle = true;
     }
     
     public Rook(Colour colour, Position pos, boolean canCastle) {
-        super(PieceType.ROOK, colour, "Rook", "R", pos);
+        super(colour, "Rook", "R", pos);
         this.canCastle = canCastle;
     }
 

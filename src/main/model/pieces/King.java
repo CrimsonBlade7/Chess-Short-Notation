@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import model.Board;
 import model.misc_vars.Colour;
-import model.misc_vars.PieceType;
 import model.move_tools.Position;
 
 public class King extends Piece {
@@ -12,12 +11,12 @@ public class King extends Piece {
     private boolean canCastle;
 
     public King(Colour colour, Position pos) {
-        super(PieceType.KING, colour, "King", "K", pos);
+        super(colour, "King", "K", pos);
         canCastle = true;
     }
 
     public King(Colour colour, Position pos, boolean canCastle) {
-        super(PieceType.KING, colour, "King", "K", pos);
+        super(colour, "King", "K", pos);
         this.canCastle = canCastle;
     }
 

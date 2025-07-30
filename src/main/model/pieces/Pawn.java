@@ -5,7 +5,6 @@ import java.util.List;
 
 import model.Board;
 import model.misc_vars.Colour;
-import model.misc_vars.PieceType;
 import model.move_tools.Position;
 
 public class Pawn extends Piece {
@@ -13,12 +12,12 @@ public class Pawn extends Piece {
     boolean EN_PASSANT;
 
     public Pawn(Colour colour, Position pos) {
-        super(PieceType.PAWN, colour, "Pawn", "P", pos);
+        super(colour, "Pawn", "P", pos);
         EN_PASSANT = false;
     }
 
     public Pawn(Colour colour, Position pos, boolean EN_PASSANT) {
-        super(PieceType.PAWN, colour, "Pawn", "P", pos);
+        super(colour, "Pawn", "P", pos);
         this.EN_PASSANT = EN_PASSANT;
     }
 
@@ -33,7 +32,8 @@ public class Pawn extends Piece {
         // Move 2 squares on starting rank
         Position targetPos = new Position(this.getX(), this.getY() + 2 * coef);
         if (isValidPosition(targetPos, board)) {
-            if (this.getY() == startingRank && this.isEmptySquare(new Position(this.getX(), this.getY() + 1 * coef), board)
+            if (this.getY() == startingRank
+                    && this.isEmptySquare(new Position(this.getX(), this.getY() + 1 * coef), board)
                     && this.isEmptySquare(targetPos, board)) {
                 validPositionsList.add(targetPos);
             }
@@ -82,9 +82,7 @@ public class Pawn extends Piece {
 
     // MODIFIES: EN_PASSANT
     // EFFECTS: sets the EN_PASSANT flag to false
-    public void resetEnPassantFlag() {
-        EN_PASSANT = false;
-    }
+    public void resetEnPassantFlag() { EN_PASSANT = false; }
 
     @Override
     public Piece copy() {

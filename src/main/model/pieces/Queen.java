@@ -5,13 +5,12 @@ import java.util.List;
 
 import model.Board;
 import model.misc_vars.Colour;
-import model.misc_vars.PieceType;
 import model.move_tools.Position;
 
 public class Queen extends Piece {
 
     public Queen(Colour colour, Position pos) {
-        super(PieceType.QUEEN, colour, "Queen", "Q", pos);
+        super(colour, "Queen", "Q", pos);
     }
 
     @Override

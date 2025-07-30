@@ -2,9 +2,8 @@ package model;
 
 import java.util.ArrayList;
 import java.util.List;
-import model.exceptions.MoveMismatchException;
+
 import model.misc_vars.Colour;
-import model.misc_vars.MoveTag;
 import model.move_tools.Move;
 import model.move_tools.Position;
 import model.pieces.*;
@@ -15,8 +14,19 @@ public class Board {
     List<Piece> whitePieces;
     List<Piece> blackPieces;
 
-    public Board() {
-        initializeBoard();
+    public Board() { initializeBoard(); }
+
+    public Board(Board board) {
+        this.board = new Piece[8][8];
+        this.whitePieces = new ArrayList<>(board.whitePieces);
+        this.blackPieces = new ArrayList<>(board.blackPieces);
+        
+        for (int y = 0; y < 8; y++) {
+            for (int x = 0; x < 8; x++) {
+                Piece piece = board.board[y][x];
+                this.board[y][x] = piece != null ? piece.copy() : null;
+            }
+        }
     }
 
     // MODIFIES: board
@@ -96,27 +106,21 @@ public class Board {
         }
     }
 
-    public List<Piece> getWhitePieces() {
-        return whitePieces;
-    }
+    public List<Piece> getWhitePieces() { return whitePieces; }
 
-    public List<Piece> getBlackPieces() {
-        return blackPieces;
-    }
+    public List<Piece> getBlackPieces() { return blackPieces; }
 
     // MODIFIES: board
     // EFFECTS: sets the board to the initial chess setup
-    public void resetBoard() {
-        initializeBoard();
-    }
+    public void resetBoard() { initializeBoard(); }
 
-    public Piece[][] getBoard() {
-        return board;
-    }
+    public Piece[][] getBoard() { return board; }
 
-    public Piece getSquare(Position pos) {
-        return board[pos.getY()][pos.getX()];
-    }
+    // REQUIRES: pos is within the bounds of the board (0 <= x, y < 8)
+    // board != null
+    // EFFECTS: returns the piece at the specified position, or null if the square
+    // is
+    public Piece getSquare(Position pos) { return board[pos.getY()][pos.getX()]; }
 
     @Override
     public String toString() {
@@ -146,20 +150,12 @@ public class Board {
     // MODIFIES: board
     // EFFECTS: Moves a piece from the initial square (ix, iy) to the final square
     // (fx, fy)
-    public boolean move(Move move) throws MoveMismatchException {
+    public boolean move(Move move) {
 
         int ix = move.PIECE.getX();
         int iy = move.PIECE.getY();
         int fx = move.getX();
         int fy = move.getY();
-
-        if (move.MOVE_TAGS.contains(MoveTag.CAPTURE) && board[fy][fx] == null) {
-            throw new MoveMismatchException("Capture move attempted on an empty square.");
-        }
-
-        if (move.MOVE_TAGS.contains(MoveTag.CHECK) && !isCheck(move)) {
-            throw new MoveMismatchException("Check move attempted when not putting the opposing king in check.");
-        }
 
         board[fy][fx] = board[iy][ix];
         board[iy][ix] = null;
@@ -168,6 +164,12 @@ public class Board {
 
         return true;
     }
+
+    // TODO: add method to handle castling
+
+    // TODO: add method to handle en passant
+
+    // TODO: add method to handle promotion
 
     // REQUIRES: colour is either Colour.WHITE or Colour.BLACK
     // MODIFIES: board
@@ -186,13 +188,55 @@ public class Board {
         }
     }
 
+    // TODO: isCheck logic needs to be implemented
     // REQUIRES: move.getMoveTags() contains MoveTag.CHECK
     // EFFECTS: Checks if the move puts the opposing king in check
-    private boolean isCheck(Move move) {
-        int fx = move.getX();
-        int fy = move.getY();
-        // TODO: Implement logic to check if the move puts the opposing king in check
-        throw new UnsupportedOperationException("isCheck method not implemented yet.");
+    public boolean inCheck(Colour colour) {
+        for (Piece piece : (colour == Colour.WHITE ? whitePieces : blackPieces)) {
+            if (piece instanceof King king) {
+                Position kingPos = king.getPos();
+                for (Piece opponentPiece : (colour == Colour.WHITE ? blackPieces : whitePieces)) {
+                    if (opponentPiece.validPositions(this).contains(kingPos)) {
+                        return true; // Opponent's piece can attack the king's position
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    // TODO: isCheckmate logic needs to be implemented
+    // EFFECTS: Checks if the game is in checkmate for the specified colour
+    private boolean isCheckmate(Colour colour) { // TODO: complete isCheckmate logic
+        for (Piece piece : (colour == Colour.WHITE ? whitePieces : blackPieces)) {
+            for (Position pos : piece.validPositions(this)) {
+                Board newBoard = new Board(this); // Create a copy of the board
+                Move move = new Move(piece, pos, new HashSet<>()); // Create a move with check tag
+                newBoard.move(move); // Simulate the move
+
+                if (!newBoard.inCheck(colour)) {
+                    return false; // If any move does not result in check, it's not checkmate
+                }
+            }
+        }
+        return true;
+    }
+
+    // TODO: isDraw logic needs to be implemented
+    // EFFECTS: Checks if the game is a draw for the specified colour
+    public boolean isDraw(Colour colour) {
+        if (isCheckmate(colour)) {
+            return false; // If it's checkmate, it's not a draw
+        }
+
+        List<Piece> pieceList = colour == Colour.WHITE ? whitePieces : blackPieces;
+        for (Piece piece : pieceList) {
+            if (!piece.validPositions(this).isEmpty()) {
+                return false; // If any piece has valid moves, it's not a draw
+            }
+        }
+
+        return true; // No valid moves for any piece, it's a draw
     }
 
     // REQUIRES: board != null
