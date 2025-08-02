@@ -1,38 +1,49 @@
 package model.pieces;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import model.Board;
 import model.misc_vars.Colour;
+import model.misc_vars.MoveTag;
+import model.move_tools.Move;
 import model.move_tools.Position;
 
 public class Knight extends Piece {
 
-    public Knight(Colour colour, Position pos) {
-        super(colour, "Knight", "N", pos);
-    }
+    public Knight(Colour colour, Position pos) { super(colour, "Knight", "N", pos); }
 
     @Override
-    public List<Position> validPositions(Board board) {
+    public List<Move> validMoves(Board board) {
 
-        List<Position> validPositionsList = new ArrayList<>();
+        List<Move> validMoveList = new ArrayList<>();
 
-        int[][] knightMoves = { { -2, 1 }, { -1, 2 }, { 1, 2 }, { 2, 1 }, { 2, -1 }, { 1, -2 }, { -1, -2 },
-                { -2, -1 } };
+        int[][] knightMoves = {
+                { -2, 1 },
+                { -1, 2 },
+                { 1, 2 },
+                { 2, 1 },
+                { 2, -1 },
+                { 1, -2 },
+                { -1, -2 },
+                { -2, -1 }
+        };
 
-        for (int[] move : knightMoves) {
-            Position pos = new Position(this.getX() + move[0], this.getY() + move[1]);
-            if (isValidPosition(pos, board)) {
-                validPositionsList.add(pos);
+        for (int[] shift : knightMoves) {
+            Position pos = new Position(this.getX() + shift[0], this.getY() + shift[1]);
+            Move move = new Move(this, pos, new HashSet<>());
+            if (isValidMove(move, board)) {
+                validMoveList.add(move);
+                if (!super.isEmptySquare(pos, board)) {
+                    move.getMoveTags().add(MoveTag.CAPTURE);
+                }
             }
         }
 
-        return validPositionsList;
+        return validMoveList;
     }
 
     @Override
-    public Piece copy() {
-        return new Knight(COLOUR, this.pos);
-    }
+    public Piece copy() { return new Knight(COLOUR, this.pos); }
 }

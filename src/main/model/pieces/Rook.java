@@ -1,10 +1,13 @@
 package model.pieces;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import model.Board;
 import model.misc_vars.Colour;
+import model.misc_vars.MoveTag;
+import model.move_tools.Move;
 import model.move_tools.Position;
 
 public class Rook extends Piece {
@@ -52,9 +55,9 @@ public class Rook extends Piece {
     }
 
     @Override
-    public List<Position> validPositions(Board board) {
+    public List<Move> validMoves(Board board) {
 
-        List<Position> validPositionsList = new ArrayList<>();
+        List<Move> validMoveList = new ArrayList<>();
 
         int[][] directions = { { -1, 0 }, // Up
                 { 1, 0 }, // Down
@@ -64,12 +67,13 @@ public class Rook extends Piece {
 
         for (int[] dir : directions) {
             boolean continueSearch = true;
-            Position pos = new Position(this.getX(), this.getY());
             do {
-                pos = new Position(pos.getX() + dir[0], pos.getY() + dir[1]);
-                if (super.isValidPosition(pos, board)) {
-                    validPositionsList.add(pos);
-                    if (!this.isEmptySquare(pos, board)) {
+                Position newPos = new Position(this.getX() + dir[0], this.getY() + dir[1]);
+                Move move = new Move(this, newPos, new HashSet<>());
+                if (super.isValidMove(move, board)) {
+                    validMoveList.add(move);
+                    if (!super.isEmptySquare(newPos, board)) {
+                        move.getMoveTags().add(MoveTag.CAPTURE);
                         continueSearch = false; // Stop searching in this direction if the move is a capture
                     }
                 } else {
@@ -77,7 +81,7 @@ public class Rook extends Piece {
                 }
             } while (continueSearch);
         }
-        return validPositionsList;
+        return validMoveList;
     }
 
     @Override

@@ -4,6 +4,7 @@ import java.util.List;
 
 import model.Board;
 import model.misc_vars.Colour;
+import model.move_tools.Move;
 import model.move_tools.Position;
 
 // Represents a generic chess piece.
@@ -37,7 +38,7 @@ public abstract class Piece {
     // board != null
     // EFFECTS: returns a list of possible moves for the at position (x, y)
     // on the given board
-    public abstract List<Position> validPositions(Board board);
+    public abstract List<Move> validMoves(Board board);
 
     @Override
     public String toString() {
@@ -91,16 +92,16 @@ public abstract class Piece {
     // EFFECTS: Checks if the move to pos is not friendly and is within the bounds
     // of the board.
     // If the position is valid, returns true; otherwise, returns false.
-    protected boolean isValidPosition(Position pos, Board board) {
+    protected boolean isValidMove(Move move, Board board) {
 
-        int x = pos.getX();
-        int y = pos.getY();
+        int x = move.getTargetX();
+        int y = move.getTargetY();
 
         if (x < 0 || x > 7 || y < 0 || y > 7) {
             return false; // Move is out of bounds
         }
 
-        Piece targetPiece = board.getSquare(pos);
+        Piece targetPiece = move.getPiece();
 
         if (targetPiece != null && targetPiece.getColour() == COLOUR) {
             return false; // Cannot capture own piece

@@ -1,9 +1,11 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import model.misc_vars.Colour;
+import model.misc_vars.MoveTag;
 import model.move_tools.Move;
 import model.move_tools.Position;
 import model.pieces.*;
@@ -18,14 +20,18 @@ public class Board {
 
     public Board(Board board) {
         this.board = new Piece[8][8];
-        this.whitePieces = new ArrayList<>(board.whitePieces);
-        this.blackPieces = new ArrayList<>(board.blackPieces);
-        
         for (int y = 0; y < 8; y++) {
             for (int x = 0; x < 8; x++) {
-                Piece piece = board.board[y][x];
+                Piece piece = board.getSquare(new Position(x, y));
                 this.board[y][x] = piece != null ? piece.copy() : null;
             }
+        }
+
+        for (Piece piece : board.whitePieces) {
+            this.whitePieces.add(piece.copy());
+        }
+        for (Piece piece : board.blackPieces) {
+            this.blackPieces.add(piece.copy());
         }
     }
 
@@ -146,16 +152,29 @@ public class Board {
         return result;
     }
 
-    // REQUIRES: move is valid
+    // REQUIRES: move is legal
     // MODIFIES: board
     // EFFECTS: Moves a piece from the initial square (ix, iy) to the final square
     // (fx, fy)
     public boolean move(Move move) {
+        // Check if the move is a castling move
+        if (move.getMoveTags().contains(MoveTag.KINGSIDE_CASTLE)
+                || move.getMoveTags().contains(MoveTag.QUEENSIDE_CASTLE)) {
+            handleCastling(move);
+        }
 
-        int ix = move.PIECE.getX();
-        int iy = move.PIECE.getY();
-        int fx = move.getX();
-        int fy = move.getY();
+        if (move.getMoveTags().contains(MoveTag.EN_PASSANT)) {
+            handleEnPassant(move);
+        }
+
+        if (move.getMoveTags().contains(MoveTag.PROMOTION)) {
+            handlePromotion(move);
+        }
+
+        int ix = move.getPiece().getX();
+        int iy = move.getPiece().getY();
+        int fx = move.getTargetX();
+        int fy = move.getTargetY();
 
         board[fy][fx] = board[iy][ix];
         board[iy][ix] = null;
@@ -192,32 +211,21 @@ public class Board {
     // REQUIRES: move.getMoveTags() contains MoveTag.CHECK
     // EFFECTS: Checks if the move puts the opposing king in check
     public boolean inCheck(Colour colour) {
-        for (Piece piece : (colour == Colour.WHITE ? whitePieces : blackPieces)) {
-            if (piece instanceof King king) {
-                Position kingPos = king.getPos();
-                for (Piece opponentPiece : (colour == Colour.WHITE ? blackPieces : whitePieces)) {
-                    if (opponentPiece.validPositions(this).contains(kingPos)) {
-                        return true; // Opponent's piece can attack the king's position
-                    }
-                }
-            }
-        }
-        return false;
+        return false; // TODO: complete inCheck logic
     }
 
     // TODO: isCheckmate logic needs to be implemented
     // EFFECTS: Checks if the game is in checkmate for the specified colour
     private boolean isCheckmate(Colour colour) { // TODO: complete isCheckmate logic
         for (Piece piece : (colour == Colour.WHITE ? whitePieces : blackPieces)) {
-            for (Position pos : piece.validPositions(this)) {
+            for (Move move : piece.validMoves(this)) {
                 Board newBoard = new Board(this); // Create a copy of the board
-                Move move = new Move(piece, pos, new HashSet<>()); // Create a move with check tag
                 newBoard.move(move); // Simulate the move
 
                 if (!newBoard.inCheck(colour)) {
                     return false; // If any move does not result in check, it's not checkmate
                 }
-            }
+            } // TODO: fix for pawns
         }
         return true;
     }
@@ -231,7 +239,7 @@ public class Board {
 
         List<Piece> pieceList = colour == Colour.WHITE ? whitePieces : blackPieces;
         for (Piece piece : pieceList) {
-            if (!piece.validPositions(this).isEmpty()) {
+            if (!piece.validMoves(this).isEmpty()) {
                 return false; // If any piece has valid moves, it's not a draw
             }
         }

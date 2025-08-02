@@ -7,39 +7,52 @@ import model.pieces.Piece;
 // Represents a move in the chess game.
 public class Move {
 
-    public final Piece PIECE;
-    public final Position POS;
-    public final Set<MoveTag> MOVE_TAGS;
-    public Piece ALT_PIECE;
-    public Position ALT_POS; // Alternative position for special moves like castling
+    public Piece piece;
+    public Position pos;
+    public Set<MoveTag> moveTags;
+    private Piece altPiece;
+    private Position altPos; // Alternative position for special moves like castling
 
     public Move(Piece piece, Position pos, Set<MoveTag> moveTags) {
-        this.PIECE = piece;
-        this.POS = pos;
-        this.MOVE_TAGS = moveTags;
+        this.piece = piece;
+        this.pos = pos;
+        this.moveTags = moveTags;
     }
-    
+
     public Move(Piece piece, Position pos, Set<MoveTag> moveTags, Piece altPiece, Position altPos) {
-        this.PIECE = piece;
-        this.POS = pos;
-        this.MOVE_TAGS = moveTags;
-        this.ALT_PIECE = altPiece;
-        this.ALT_POS = altPos;
+        this.piece = piece;
+        this.pos = pos;
+        this.moveTags = moveTags;
+        this.altPiece = altPiece;
+        this.altPos = altPos;
     }
 
-    public Position getPos() {
-        return POS;
-    }
+    public Piece getPiece() { return piece; }
 
-    public int getX() {
-        return POS.getX();
-    }
+    public void setPiece(Piece piece) { this.piece = piece; }
 
-    public int getY() {
-        return POS.getY();
-    }
+    public Position getPos() { return pos; }
+
+    public void setPos(Position pos) { this.pos = pos; }
+
+    public int getTargetX() { return pos.getX(); }
+
+    public int getTargetY() { return pos.getY(); }
+
+    public Set<MoveTag> getMoveTags() { return moveTags; }
+
+    public void setMoveTags(Set<MoveTag> moveTags) { this.moveTags = moveTags; }
+
+    public Piece getAltPiece() { return altPiece; }
+
+    public void setAltPiece(Piece altPiece) { this.altPiece = altPiece; }
+
+    public Position getAltPos() { return altPos; }
+
+    public void setAltPos(Position altPos) { this.altPos = altPos; }
 
     public void addMoveTag(MoveTag moveTag) {
-        MOVE_TAGS.add(moveTag);
+        moveTags.add(moveTag); 
     }
+
 }

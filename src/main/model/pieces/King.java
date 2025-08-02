@@ -1,9 +1,12 @@
 package model.pieces;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import model.Board;
 import model.misc_vars.Colour;
+import model.misc_vars.MoveTag;
+import model.move_tools.Move;
 import model.move_tools.Position;
 
 public class King extends Piece {
@@ -21,9 +24,9 @@ public class King extends Piece {
     }
 
     @Override
-    public List<Position> validPositions(Board board) {
+    public List<Move> validMoves(Board board) {
 
-        List<Position> validPositionsList = new ArrayList<>();
+        List<Move> validMoveList = new ArrayList<>();
 
         for (int y = -1; y <= 1; y++) {
             for (int x = -1; x <= 1; x++) {
@@ -31,23 +34,35 @@ public class King extends Piece {
                     continue;
                 }
                 Position newPos = new Position(this.getX() + x, this.getY() + y);
-                if (super.isValidPosition(newPos, board)) {
-                    validPositionsList.add(newPos);
+                Move move = new Move(this, newPos, new HashSet<>());
+                if (super.isValidMove(move, board)) {
+                    validMoveList.add(move);
+                }
+                if (board.getSquare(newPos) != null) {
+                    move.getMoveTags().add(MoveTag.CAPTURE);
                 }
             }
         }
 
         // Check for castling kingside
         if (canCastle(1, board)) {
-            validPositionsList.add(new Position(this.getX() + 2, this.getY()));
+            Position newPos = new Position(this.getX() + 2, this.getY());
+            Position rookPosition = new Position(7, this.getY());
+            Move move = new Move(this, newPos, new HashSet<>(), board.getSquare(rookPosition), rookPosition);
+            move.addMoveTag(MoveTag.KINGSIDE_CASTLE);
+            validMoveList.add(move);
         }
-        
+
         // Check for castling queenside
         if (canCastle(-1, board)) {
-            validPositionsList.add(new Position(this.getX() - 2, this.getY()));
+            Position newPos = new Position(this.getX() - 2, this.getY());
+            Position rookPosition = new Position(0, this.getY());
+            Move move = new Move(this, newPos, new HashSet<>(), board.getSquare(rookPosition), rookPosition);
+            move.addMoveTag(MoveTag.QUEENSIDE_CASTLE);
+            validMoveList.add(move);
         }
-        
-        return validPositionsList;
+
+        return validMoveList;
     }
 
     // REQUIRES: direction is either 1 (kingside) or -1 (queenside)
