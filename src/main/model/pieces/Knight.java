@@ -1,12 +1,11 @@
 package model.pieces;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 import model.Board;
 import model.misc_vars.Colour;
-import model.misc_vars.MoveTag;
+import model.misc_vars.MoveType;
 import model.move_tools.Move;
 import model.move_tools.Position;
 
@@ -31,12 +30,12 @@ public class Knight extends Piece {
         };
 
         for (int[] shift : knightMoves) {
-            Position pos = new Position(this.getX() + shift[0], this.getY() + shift[1]);
-            Move move = new Move(this, pos, new HashSet<>());
-            if (isValidMove(move, board)) {
-                validMoveList.add(move);
+            Position newPos = new Position(this.getX() + shift[0], this.getY() + shift[1]);
+            if (super.isValidPosition(newPos, super.COLOUR, board)) {
                 if (!super.isEmptySquare(pos, board)) {
-                    move.getMoveTags().add(MoveTag.CAPTURE);
+                    validMoveList.add(new Move(this, newPos, true, MoveType.NORMAL));
+                } else {
+                    validMoveList.add(new Move(this, newPos, false, MoveType.NORMAL));
                 }
             }
         }

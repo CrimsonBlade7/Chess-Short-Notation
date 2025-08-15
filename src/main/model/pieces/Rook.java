@@ -1,12 +1,11 @@
 package model.pieces;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 import model.Board;
 import model.misc_vars.Colour;
-import model.misc_vars.MoveTag;
+import model.misc_vars.MoveType;
 import model.move_tools.Move;
 import model.move_tools.Position;
 
@@ -69,12 +68,12 @@ public class Rook extends Piece {
             boolean continueSearch = true;
             do {
                 Position newPos = new Position(this.getX() + dir[0], this.getY() + dir[1]);
-                Move move = new Move(this, newPos, new HashSet<>());
-                if (super.isValidMove(move, board)) {
-                    validMoveList.add(move);
+                if (super.isValidPosition(newPos, super.COLOUR, board)) {
                     if (!super.isEmptySquare(newPos, board)) {
-                        move.getMoveTags().add(MoveTag.CAPTURE);
+                        validMoveList.add(new Move(this, newPos, true, MoveType.NORMAL));
                         continueSearch = false; // Stop searching in this direction if the move is a capture
+                    } else {
+                        validMoveList.add(new Move(this, newPos, false, MoveType.NORMAL));
                     }
                 } else {
                     continueSearch = false; // Stop searching in this direction if the move is invalid

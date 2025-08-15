@@ -1,28 +1,31 @@
 package model.move_tools;
 
-import java.util.Set;
-import model.misc_vars.MoveTag;
+import model.misc_vars.MoveType;
 import model.pieces.Piece;
 
 // Represents a move in the chess game.
 public class Move {
 
-    public Piece piece;
-    public Position pos;
-    public Set<MoveTag> moveTags;
+    private Piece piece;
+    private Position pos;
+    private boolean capture;
+    private boolean check;
+    private MoveType moveType;
     private Piece altPiece;
     private Position altPos; // Alternative position for special moves like castling
 
-    public Move(Piece piece, Position pos, Set<MoveTag> moveTags) {
+    public Move(Piece piece, Position pos, boolean capture, MoveType moveType) {
         this.piece = piece;
         this.pos = pos;
-        this.moveTags = moveTags;
+        this.capture = capture;
+        this.moveType = moveType;
     }
 
-    public Move(Piece piece, Position pos, Set<MoveTag> moveTags, Piece altPiece, Position altPos) {
+    public Move(Piece piece, Position pos, boolean capture, MoveType moveType, Piece altPiece, Position altPos) {
         this.piece = piece;
         this.pos = pos;
-        this.moveTags = moveTags;
+        this.capture = capture;
+        this.moveType = moveType;
         this.altPiece = altPiece;
         this.altPos = altPos;
     }
@@ -35,13 +38,17 @@ public class Move {
 
     public void setPos(Position pos) { this.pos = pos; }
 
-    public int getTargetX() { return pos.getX(); }
+    public boolean isCapture() { return capture; }
 
-    public int getTargetY() { return pos.getY(); }
+    public void setCapture(boolean capture) { this.capture = capture; }
 
-    public Set<MoveTag> getMoveTags() { return moveTags; }
+    public boolean isCheck() { return check; }
 
-    public void setMoveTags(Set<MoveTag> moveTags) { this.moveTags = moveTags; }
+    public void setCheck(boolean check) { this.check = check; }
+
+    public MoveType getMoveType() { return moveType; }
+
+    public void setMoveType(MoveType moveType) { this.moveType = moveType; }
 
     public Piece getAltPiece() { return altPiece; }
 
@@ -51,8 +58,8 @@ public class Move {
 
     public void setAltPos(Position altPos) { this.altPos = altPos; }
 
-    public void addMoveTag(MoveTag moveTag) {
-        moveTags.add(moveTag); 
-    }
+    public int getTargetX() { return pos.getX(); }
+
+    public int getTargetY() { return pos.getY(); }
 
 }

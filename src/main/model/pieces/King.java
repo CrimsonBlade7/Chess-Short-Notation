@@ -1,11 +1,10 @@
 package model.pieces;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import model.Board;
 import model.misc_vars.Colour;
-import model.misc_vars.MoveTag;
+import model.misc_vars.MoveType;
 import model.move_tools.Move;
 import model.move_tools.Position;
 
@@ -34,12 +33,12 @@ public class King extends Piece {
                     continue;
                 }
                 Position newPos = new Position(this.getX() + x, this.getY() + y);
-                Move move = new Move(this, newPos, new HashSet<>());
-                if (super.isValidMove(move, board)) {
-                    validMoveList.add(move);
-                }
-                if (board.getSquare(newPos) != null) {
-                    move.getMoveTags().add(MoveTag.CAPTURE);
+                if (super.isValidPosition(newPos, super.COLOUR, board)) {
+                    if (board.getSquare(newPos) != null) {
+                        validMoveList.add(new Move(this, newPos, true, MoveType.NORMAL));
+                    } else {
+                        validMoveList.add(new Move(this, newPos, false, MoveType.NORMAL));
+                    }
                 }
             }
         }
@@ -48,8 +47,7 @@ public class King extends Piece {
         if (canCastle(1, board)) {
             Position newPos = new Position(this.getX() + 2, this.getY());
             Position rookPosition = new Position(7, this.getY());
-            Move move = new Move(this, newPos, new HashSet<>(), board.getSquare(rookPosition), rookPosition);
-            move.addMoveTag(MoveTag.KINGSIDE_CASTLE);
+            Move move = new Move(this, newPos, false, MoveType.KINGSIDE_CASTLE, board.getSquare(rookPosition), rookPosition);
             validMoveList.add(move);
         }
 
@@ -57,8 +55,7 @@ public class King extends Piece {
         if (canCastle(-1, board)) {
             Position newPos = new Position(this.getX() - 2, this.getY());
             Position rookPosition = new Position(0, this.getY());
-            Move move = new Move(this, newPos, new HashSet<>(), board.getSquare(rookPosition), rookPosition);
-            move.addMoveTag(MoveTag.QUEENSIDE_CASTLE);
+            Move move = new Move(this, newPos, false, MoveType.QUEENSIDE_CASTLE, board.getSquare(rookPosition), rookPosition);
             validMoveList.add(move);
         }
 

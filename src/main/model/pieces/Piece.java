@@ -13,6 +13,7 @@ public abstract class Piece {
     private final String NAME, SYMBOL;
     protected Position pos;
 
+
     public Piece(Colour colour, String name, String symbol, Position pos) {
         COLOUR = colour;
         NAME = name;
@@ -92,18 +93,16 @@ public abstract class Piece {
     // EFFECTS: Checks if the move to pos is not friendly and is within the bounds
     // of the board.
     // If the position is valid, returns true; otherwise, returns false.
-    protected boolean isValidMove(Move move, Board board) {
+    protected boolean isValidPosition(Position pos, Colour colour, Board board) {
 
-        int x = move.getTargetX();
-        int y = move.getTargetY();
+        int x = pos.getX();
+        int y = pos.getY();
 
         if (x < 0 || x > 7 || y < 0 || y > 7) {
             return false; // Move is out of bounds
         }
 
-        Piece targetPiece = move.getPiece();
-
-        if (targetPiece != null && targetPiece.getColour() == COLOUR) {
+        if (board.getSquare(pos) != null && colour == COLOUR) {
             return false; // Cannot capture own piece
         }
 

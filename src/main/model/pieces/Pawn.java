@@ -1,12 +1,11 @@
 package model.pieces;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 import model.Board;
 import model.misc_vars.Colour;
-import model.misc_vars.MoveTag;
+import model.misc_vars.MoveType;
 import model.move_tools.Move;
 import model.move_tools.Position;
 
@@ -33,32 +32,28 @@ public class Pawn extends Piece {
         int startingRank = getColour() == Colour.WHITE ? 1 : 6; // Starting rank for pawns
 
         // Move 2 squares on starting rank
-        Position targetPos = new Position(this.getX(), this.getY() + 2 * coef);
-        Move move = new Move(this, targetPos, new HashSet<>());
-        if (isValidMove(move, board)) {
+        Position newPos = new Position(this.getX(), this.getY() + 2 * coef);
+        if (super.isValidPosition(newPos, super.COLOUR, board)) {
             if (this.getY() == startingRank
                     && this.isEmptySquare(new Position(this.getX(), this.getY() + 1 * coef), board)
-                    && this.isEmptySquare(targetPos, board)) {
-                validMoveList.add(move);
+                    && this.isEmptySquare(newPos, board)) {
+                validMoveList.add(new Move(this, newPos, false, MoveType.NORMAL));
             }
         }
 
         // Check the 3 squares in front of the pawn
         for (int i = -1; i <= 1; i++) {
-            targetPos = new Position(this.getX() + i, this.getY() + 1 * coef);
-            move = new Move(this, targetPos, new HashSet<>());
+            newPos = new Position(this.getX() + i, this.getY() + 1 * coef);
             if (i == 0) {
-                if (isValidMove(move, board)) {
-                    if (this.isEmptySquare(targetPos, board)) {
-                        validMoveList.add(move);
+                if (super.isValidPosition(newPos, super.COLOUR, board)) {
+                    if (this.isEmptySquare(newPos, board)) {
+                        validMoveList.add(new Move(this, newPos, false, MoveType.NORMAL));
                     }
                 }
-            } else if (isValidMove(move, board) && !super.isEmptySquare(targetPos, board)) {
-                move.getMoveTags().add(MoveTag.CAPTURE);
-                validMoveList.add(move);
-            } else if (canEnPassant(move, board)) {
-                move.getMoveTags().add(MoveTag.EN_PASSANT);
-                validMoveList.add(move);
+            } else if (super.isValidPosition(newPos, super.COLOUR, board) && !super.isEmptySquare(newPos, board)) {
+                validMoveList.add(new Move(this, newPos, true, MoveType.NORMAL));
+            } else if (canEnPassant(newPos, board)) {
+                validMoveList.add(new Move(this, newPos, true, MoveType.EN_PASSANT));
             }
         }
 
@@ -102,9 +97,9 @@ public class Pawn extends Piece {
     // board != null
     // EFFECTS: returns true if the pawn can perform an en passant capture at the
     // given position, false otherwise
-    private boolean canEnPassant(Move move, Board board) {
-        int coef = getColour() == Colour.WHITE ? 1 : -1; // Determine direction based on colour
-        return board.getSquare(new Position(move.getTargetX(), move.getTargetY() - 1 * coef)) instanceof Pawn pawn
+    private boolean canEnPassant(Position pos, Board board) {
+        int coef = super.getColour() == Colour.WHITE ? 1 : -1; // Determine direction based on colour
+        return board.getSquare(new Position(pos.getX(), pos.getY() - 1 * coef)) instanceof Pawn pawn
                 && pawn.EN_PASSANT;
     }
 }

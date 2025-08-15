@@ -1,11 +1,10 @@
 package model;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 import model.misc_vars.Colour;
-import model.misc_vars.MoveTag;
+import model.misc_vars.MoveType;
 import model.move_tools.Move;
 import model.move_tools.Position;
 import model.pieces.*;
@@ -152,25 +151,38 @@ public class Board {
         return result;
     }
 
-    // REQUIRES: move is legal
+    // REQUIRES: move is legal and MoveType is not null
     // MODIFIES: board
     // EFFECTS: Moves a piece from the initial square (ix, iy) to the final square
     // (fx, fy)
-    public boolean move(Move move) {
+    public void move(Move move) {
         // Check if the move is a castling move
-        if (move.getMoveTags().contains(MoveTag.KINGSIDE_CASTLE)
-                || move.getMoveTags().contains(MoveTag.QUEENSIDE_CASTLE)) {
+        if (move.getMoveType() == MoveType.NORMAL) {
+            handleNormalMove(move);
+        }
+        else if (move.getMoveType() == MoveType.KINGSIDE_CASTLE
+                || move.getMoveType() == MoveType.QUEENSIDE_CASTLE) {
             handleCastling(move);
         }
-
-        if (move.getMoveTags().contains(MoveTag.EN_PASSANT)) {
+        else if (move.getMoveType() == MoveType.EN_PASSANT) {
             handleEnPassant(move);
         }
-
-        if (move.getMoveTags().contains(MoveTag.PROMOTION)) {
+        else if (move.getMoveType() == MoveType.PROMOTION) {
             handlePromotion(move);
         }
+        else {
+            throw new IllegalArgumentException("Illegal move type: " + move.getMoveType());
+        }
 
+        if (move.isCapture()) {
+            handleCapture(move);
+        }
+    }
+
+    // REQUIRES: move.getMoveType() is MoveType.NORMAL
+    // MODIFIES: board
+    // EFFECTS: Handles normal moves for the specified move with no captures
+    private void handleNormalMove(Move move) {
         int ix = move.getPiece().getX();
         int iy = move.getPiece().getY();
         int fx = move.getTargetX();
@@ -180,15 +192,79 @@ public class Board {
         board[iy][ix] = null;
 
         board[fy][fx].setPos(new Position(fx, fy));
-
-        return true;
     }
 
     // TODO: add method to handle castling
+    // REQUIRES: move.getMoveType() is MoveTag.KINGSIDE_CASTLE or
+    // MoveTag.QUEENSIDE_CASTLE and casting is valid
+    // MODIFIES: board
+    // EFFECTS: Handles castling moves for the specified move
+    private void handleCastling(Move move) {
+        
+    }
 
     // TODO: add method to handle en passant
+    // REQUIRES: move.getMoveTags() contains MoveTag.EN_PASSANT
+    // MODIFIES: board
+    // EFFECTS: Handles en passant moves for the specified move
+    private void handleEnPassant(Move move) {
+        int fx = move.getTargetX();
+        int fy = move.getTargetY();
+        int ix = move.getPiece().getX();
+        int iy = move.getPiece().getY();
 
-    // TODO: add method to handle promotion
+        // Remove the captured pawn
+        if (move.getPiece().getColour() == Colour.WHITE) {
+            board[fy - 1][fx] = null; // Capture the black pawn
+        }
+        else {
+            board[fy + 1][fx] = null; // Capture the white pawn
+        }
+
+        // Move the piece to the target square
+        board[fy][fx] = board[iy][ix];
+        board[iy][ix] = null;
+
+        board[fy][fx].setPos(new Position(fx, fy));
+    }
+
+    // TODO: handle promotion, add pieces to list
+    // REQUIRES: move.getMoveTags() contains MoveTag.PROMOTION
+    // MODIFIES: board
+    // EFFECTS: Handles promotion moves for the specified move
+    private void handlePromotion(Move move) {
+        int fx = move.getTargetX();
+        int fy = move.getTargetY();
+        Piece piece = move.getPiece();
+
+        // Remove the pawn from the board
+        board[fy][fx] = null;
+
+        // Create a new piece based on the promotion type
+        if (move.getMoveType() == MoveType.PROMOTION) {
+            board[move.getPiece().getColour() == Colour.WHITE ? 7 : 0][fx] = move.getAltPiece();
+            // Promote to the specified piece
+        }
+    }
+
+    // REQUIRES: move.getMoveTags() contains MoveTag.CAPTURE
+    // MODIFIES: board
+    // EFFECTS: handles captures but does not move the piece
+    private void handleCapture(Move move) {
+        int fx = move.getTargetX();
+        int fy = move.getTargetY();
+        Piece capturedPiece = board[fy][fx];
+
+        if (capturedPiece != null) {
+            // Remove the captured piece from the board
+            if (capturedPiece.getColour() == Colour.WHITE) {
+                whitePieces.remove(capturedPiece);
+            }
+            else {
+                blackPieces.remove(capturedPiece);
+            }
+        }
+    }
 
     // REQUIRES: colour is either Colour.WHITE or Colour.BLACK
     // MODIFIES: board
