@@ -1,65 +1,78 @@
 package model.move_tools;
 
+import model.exceptions.IllegalMoveStateException;
+import model.misc_vars.Colour;
 import model.misc_vars.MoveType;
+import model.pieces.Pawn;
 import model.pieces.Piece;
 
 // Represents a move in the chess game.
 public class Move {
 
-    private Piece piece;
-    private Position pos;
-    private boolean capture;
-    private boolean check;
-    private MoveType moveType;
-    private Piece altPiece;
-    private Position altPos; // Alternative position for special moves like castling
+    public final Piece PIECE;
+    public final Position POS;
+    public final Colour COLOUR;
+    public final boolean CAPTURE;
+    public final boolean CHECK;
+    public final MoveType MOVETYPE;
 
-    public Move(Piece piece, Position pos, boolean capture, MoveType moveType) {
-        this.piece = piece;
-        this.pos = pos;
-        this.capture = capture;
-        this.moveType = moveType;
+    // REQUIRES: piece != null, pos != null, moveType != null
+    // EFFECTS: constructs a Move object with the given parameters, throws
+    // IllegalMoveStateException if the move state is not legal
+    public Move(Piece piece, Position pos, boolean capture, boolean check, MoveType moveType)
+            throws IllegalMoveStateException {
+        this.PIECE = piece;
+        this.POS = pos;
+        this.COLOUR = piece.getColour();
+        this.CAPTURE = capture;
+        this.CHECK = check;
+        this.MOVETYPE = moveType;
     }
 
-    public Move(Piece piece, Position pos, boolean capture, MoveType moveType, Piece altPiece, Position altPos) {
-        this.piece = piece;
-        this.pos = pos;
-        this.capture = capture;
-        this.moveType = moveType;
-        this.altPiece = altPiece;
-        this.altPos = altPos;
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((PIECE == null) ? 0 : PIECE.hashCode());
+        result = prime * result + ((POS == null) ? 0 : POS.hashCode());
+        result = prime * result + ((COLOUR == null) ? 0 : COLOUR.hashCode());
+        result = prime * result + (CAPTURE ? 1231 : 1237);
+        result = prime * result + (CHECK ? 1231 : 1237);
+        result = prime * result + ((MOVETYPE == null) ? 0 : MOVETYPE.hashCode());
+        return result;
     }
 
-    public Piece getPiece() { return piece; }
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Move other = (Move) obj;
+        if (PIECE == null) {
+            if (other.PIECE != null)
+                return false;
+        }
+        else if (!PIECE.equals(other.PIECE))
+            return false;
+        if (POS == null) {
+            if (other.POS != null)
+                return false;
+        }
+        else if (!POS.equals(other.POS))
+            return false;
+        if (COLOUR != other.COLOUR)
+            return false;
+        if (CAPTURE != other.CAPTURE)
+            return false;
+        if (CHECK != other.CHECK)
+            return false;
+        if (MOVETYPE != other.MOVETYPE)
+            return false;
+        return true;
+    }
 
-    public void setPiece(Piece piece) { this.piece = piece; }
-
-    public Position getPos() { return pos; }
-
-    public void setPos(Position pos) { this.pos = pos; }
-
-    public boolean isCapture() { return capture; }
-
-    public void setCapture(boolean capture) { this.capture = capture; }
-
-    public boolean isCheck() { return check; }
-
-    public void setCheck(boolean check) { this.check = check; }
-
-    public MoveType getMoveType() { return moveType; }
-
-    public void setMoveType(MoveType moveType) { this.moveType = moveType; }
-
-    public Piece getAltPiece() { return altPiece; }
-
-    public void setAltPiece(Piece altPiece) { this.altPiece = altPiece; }
-
-    public Position getAltPos() { return altPos; }
-
-    public void setAltPos(Position altPos) { this.altPos = altPos; }
-
-    public int getTargetX() { return pos.getX(); }
-
-    public int getTargetY() { return pos.getY(); }
-
+   
 }

@@ -12,8 +12,7 @@ import model.pieces.*;
 public class Board {
 
     private Piece[][] board;
-    List<Piece> whitePieces;
-    List<Piece> blackPieces;
+    List<Piece> pieceList;
 
     public Board() { initializeBoard(); }
 
@@ -26,11 +25,8 @@ public class Board {
             }
         }
 
-        for (Piece piece : board.whitePieces) {
-            this.whitePieces.add(piece.copy());
-        }
-        for (Piece piece : board.blackPieces) {
-            this.blackPieces.add(piece.copy());
+        for (Piece piece : board.pieceList) {
+            this.pieceList.add(piece.copy());
         }
     }
 
@@ -40,8 +36,7 @@ public class Board {
 
         board = new Piece[8][8];
         // Initialize white pieces
-        whitePieces = new ArrayList<>();
-        blackPieces = new ArrayList<>();
+        pieceList = new ArrayList<>();
 
         Rook whiteRook1 = new Rook(Colour.WHITE, new Position(0, 0));
         Knight whiteKnight1 = new Knight(Colour.WHITE, new Position(1, 0));
@@ -61,19 +56,22 @@ public class Board {
         board[0][6] = whiteKnight2;
         board[0][7] = whiteRook2;
 
-        whitePieces.add(whiteRook1);
-        whitePieces.add(whiteKnight1);
-        whitePieces.add(whiteBishop1);
-        whitePieces.add(whiteQueen);
-        whitePieces.add(whiteKing);
-        whitePieces.add(whiteBishop2);
-        whitePieces.add(whiteKnight2);
-        whitePieces.add(whiteRook2);
+        pieceList.add(whiteRook1);
+        pieceList.add(whiteKnight1);
+        pieceList.add(whiteBishop1);
+        pieceList.add(whiteQueen);
+        pieceList.add(whiteKing);
+        pieceList.add(whiteBishop2);
+        pieceList.add(whiteKnight2);
+        pieceList.add(whiteRook2);
 
         for (int i = 0; i < 8; i++) {
             Pawn whitePawn = new Pawn(Colour.WHITE, new Position(i, 1));
+            Pawn blackPawn = new Pawn(Colour.BLACK, new Position(i, 6));
             board[1][i] = whitePawn;
-            whitePieces.add(whitePawn);
+            board[6][i] = blackPawn;
+            pieceList.add(whitePawn);
+            pieceList.add(blackPawn);
         }
 
         // Initialize black pieces
@@ -95,25 +93,17 @@ public class Board {
         board[7][6] = blackKnight2;
         board[7][7] = blackRook2;
 
-        blackPieces.add(blackRook1);
-        blackPieces.add(blackKnight1);
-        blackPieces.add(blackBishop1);
-        blackPieces.add(blackQueen);
-        blackPieces.add(blackKing);
-        blackPieces.add(blackBishop2);
-        blackPieces.add(blackKnight2);
-        blackPieces.add(blackRook2);
-
-        for (int i = 0; i < 8; i++) {
-            Pawn blackPawn = new Pawn(Colour.BLACK, new Position(i, 6));
-            board[6][i] = blackPawn;
-            blackPieces.add(blackPawn);
-        }
+        pieceList.add(blackRook1);
+        pieceList.add(blackKnight1);
+        pieceList.add(blackBishop1);
+        pieceList.add(blackQueen);
+        pieceList.add(blackKing);
+        pieceList.add(blackBishop2);
+        pieceList.add(blackKnight2);
+        pieceList.add(blackRook2);
     }
 
-    public List<Piece> getWhitePieces() { return whitePieces; }
-
-    public List<Piece> getBlackPieces() { return blackPieces; }
+    public List<Piece> getPieceList() { return pieceList; }
 
     // MODIFIES: board
     // EFFECTS: sets the board to the initial chess setup
@@ -155,7 +145,7 @@ public class Board {
     // MODIFIES: board
     // EFFECTS: Moves a piece from the initial square (ix, iy) to the final square
     // (fx, fy)
-    public void move(Move move) {
+    public void executeMove(Move move) {
         // Check if the move is a castling move
         if (move.getMoveType() == MoveType.NORMAL) {
             handleNormalMove(move);
@@ -175,43 +165,56 @@ public class Board {
         }
 
         if (move.isCapture()) {
-            handleCapture(move);
+            pieceList.remove(getSquare(move.getPos()));
         }
     }
 
-    // REQUIRES: move.getMoveType() is MoveType.NORMAL
+    // REQUIRES: move.getMoveType() == MoveType.NORMAL, move is legal
     // MODIFIES: board
-    // EFFECTS: Handles normal moves for the specified move with no captures
-    private void handleNormalMove(Move move) {
-        int ix = move.getPiece().getX();
-        int iy = move.getPiece().getY();
-        int fx = move.getTargetX();
-        int fy = move.getTargetY();
-
+    // EFFECTS: Repositions the piece on the board and updates its position
+    private void repositionPiece(int ix, int iy, int fx, int fy) {
         board[fy][fx] = board[iy][ix];
         board[iy][ix] = null;
-
         board[fy][fx].setPos(new Position(fx, fy));
     }
 
-    // TODO: add method to handle castling
-    // REQUIRES: move.getMoveType() is MoveTag.KINGSIDE_CASTLE or
-    // MoveTag.QUEENSIDE_CASTLE and casting is valid
+    // REQUIRES: move.getMoveType() == MoveType.NORMAL, move is legal
+    // MODIFIES: board
+    // EFFECTS: Handles normal moves for the specified move with no captures
+    private void handleNormalMove(Move move) {
+        repositionPiece(move.getPiece().getX(), move.getPiece().getY(),
+                move.getTargetX(), move.getTargetY());
+    }
+
+    // REQUIRES: move.getMoveType() == MoveTag.KINGSIDE_CASTLE or
+    // MoveTag.QUEENSIDE_CASTLE and casting is legal
     // MODIFIES: board
     // EFFECTS: Handles castling moves for the specified move
     private void handleCastling(Move move) {
-        
+        int row = move.getPiece().getColour() == Colour.WHITE ? 0 : 7;
+        if (move.getMoveType() == MoveType.KINGSIDE_CASTLE) {
+            repositionPiece(4, row, 6, row);
+            repositionPiece(7, row, 5, row);
+        }
+        else if (move.getMoveType() == MoveType.QUEENSIDE_CASTLE) {
+            repositionPiece(4, row, 2, row);
+            repositionPiece(0, row, 3, row);
+        }
+        else {
+            throw new IllegalArgumentException("Invalid castling move type: " + move.getMoveType());
+        }
+
     }
 
     // TODO: add method to handle en passant
-    // REQUIRES: move.getMoveTags() contains MoveTag.EN_PASSANT
+    // REQUIRES: move.getMoveTags == MoveTag.EN_PASSANT and move is legal
     // MODIFIES: board
     // EFFECTS: Handles en passant moves for the specified move
     private void handleEnPassant(Move move) {
         int fx = move.getTargetX();
         int fy = move.getTargetY();
-        int ix = move.getPiece().getX();
-        int iy = move.getPiece().getY();
+        int ix = move.getInitialX();
+        int iy = move.getInitialY();
 
         // Remove the captured pawn
         if (move.getPiece().getColour() == Colour.WHITE) {
@@ -229,12 +232,13 @@ public class Board {
     }
 
     // TODO: handle promotion, add pieces to list
-    // REQUIRES: move.getMoveTags() contains MoveTag.PROMOTION
+    // REQUIRES: move.getMoveTag == MoveTag.PROMOTION and move is legal
     // MODIFIES: board
     // EFFECTS: Handles promotion moves for the specified move
     private void handlePromotion(Move move) {
         int fx = move.getTargetX();
         int fy = move.getTargetY();
+
         Piece piece = move.getPiece();
 
         // Remove the pawn from the board
@@ -242,87 +246,11 @@ public class Board {
 
         // Create a new piece based on the promotion type
         if (move.getMoveType() == MoveType.PROMOTION) {
-            board[move.getPiece().getColour() == Colour.WHITE ? 7 : 0][fx] = move.getAltPiece();
+            board[move.getPiece().getColour() == Colour.WHITE ? 7 : 0][fx] = move.getPromotePiece();
             // Promote to the specified piece
         }
     }
-
-    // REQUIRES: move.getMoveTags() contains MoveTag.CAPTURE
-    // MODIFIES: board
-    // EFFECTS: handles captures but does not move the piece
-    private void handleCapture(Move move) {
-        int fx = move.getTargetX();
-        int fy = move.getTargetY();
-        Piece capturedPiece = board[fy][fx];
-
-        if (capturedPiece != null) {
-            // Remove the captured piece from the board
-            if (capturedPiece.getColour() == Colour.WHITE) {
-                whitePieces.remove(capturedPiece);
-            }
-            else {
-                blackPieces.remove(capturedPiece);
-            }
-        }
-    }
-
-    // REQUIRES: colour is either Colour.WHITE or Colour.BLACK
-    // MODIFIES: board
-    // EFFECTS: Resets the en passant flags for all pawns on the board
-    public void resetEnPassantFlags(Colour colour) {
-        if (colour != Colour.WHITE && colour != Colour.BLACK) {
-            throw new IllegalArgumentException("Colour must be either WHITE or BLACK");
-        }
-
-        List<Piece> pieceList = colour == Colour.WHITE ? whitePieces : blackPieces;
-
-        for (Piece piece : pieceList) {
-            if (piece instanceof Pawn pawn) {
-                pawn.resetEnPassantFlag();
-            }
-        }
-    }
-
-    // TODO: isCheck logic needs to be implemented
-    // REQUIRES: move.getMoveTags() contains MoveTag.CHECK
-    // EFFECTS: Checks if the move puts the opposing king in check
-    public boolean inCheck(Colour colour) {
-        return false; // TODO: complete inCheck logic
-    }
-
-    // TODO: isCheckmate logic needs to be implemented
-    // EFFECTS: Checks if the game is in checkmate for the specified colour
-    private boolean isCheckmate(Colour colour) { // TODO: complete isCheckmate logic
-        for (Piece piece : (colour == Colour.WHITE ? whitePieces : blackPieces)) {
-            for (Move move : piece.validMoves(this)) {
-                Board newBoard = new Board(this); // Create a copy of the board
-                newBoard.move(move); // Simulate the move
-
-                if (!newBoard.inCheck(colour)) {
-                    return false; // If any move does not result in check, it's not checkmate
-                }
-            } // TODO: fix for pawns
-        }
-        return true;
-    }
-
-    // TODO: isDraw logic needs to be implemented
-    // EFFECTS: Checks if the game is a draw for the specified colour
-    public boolean isDraw(Colour colour) {
-        if (isCheckmate(colour)) {
-            return false; // If it's checkmate, it's not a draw
-        }
-
-        List<Piece> pieceList = colour == Colour.WHITE ? whitePieces : blackPieces;
-        for (Piece piece : pieceList) {
-            if (!piece.validMoves(this).isEmpty()) {
-                return false; // If any piece has valid moves, it's not a draw
-            }
-        }
-
-        return true; // No valid moves for any piece, it's a draw
-    }
-
+    
     // REQUIRES: board != null
     // MODIFIES: board
     // EFFECTS: Returns a deep copy of the board

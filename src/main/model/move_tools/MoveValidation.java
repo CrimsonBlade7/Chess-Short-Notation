@@ -1,80 +1,80 @@
 package model.move_tools;
 
 import model.Board;
+import model.misc_vars.Colour;
 import model.misc_vars.MoveType;
-import model.pieces.Piece;
 import model.pieces.*;
 
-// Represents algebraic notation for chess moves.
+// Validates moves made in the chess game.
 public class MoveValidation {
 
-    // TODO: Complete stringToMove method
-    public static Move stringToMove(String moveString, Board board) {
-        return null; // Placeholder for future implementation
+    // REQUIRES: move != null && board != null
+    // EFFECTS: returns true if the move is a valid and the resultant board is in a
+    // legal state
+    public static boolean isLegalMove(Move move, Board board) {
+        if (!isLegalMoveState(move, board)) 
+            return false;
+        
+        if (!isValidMove(move, board)) 
+            return false;
+
+        // If own king is in check, move is not legal
+        Board newBoard = board.copy();
+        newBoard.executeMove(move);
+        if (BoardStateValidation.isInCheck(move.COLOUR, newBoard))
+            return false;
+        
+        return true;
     }
 
-    // REQUIRES: move != null
-    // board != null
-    // EFFECTS: returns true if the move is a valid and legal
-    public static boolean isLegalMove(Move move, Board board) {
-        return false; // TODO: Placeholder for future implementation
+    // EFFECTS: returns true if the move exists within the list of all pieces'
+    // possible moves
+    public static boolean isValidMove(Move move, Board board) {
+        for (Move possibleMove : move.PIECE.validMoves(board)) {
+            if (possibleMove.equals(move)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     // EFFECTS: validates the move type for given move and board, returns true if
     // valid, false otherwise
-    private boolean isValidMoveType(Move move, Board board) {
-        Piece piece = move.getPiece();
-        Position pos = move.getPos();
-        MoveType moveType = move.getMoveType();
-        boolean isCapture = move.isCapture();
-        Piece altPiece = move.getAltPiece();
-        Position altPos = move.getAltPos();
+    public static boolean isLegalMoveState(Move move, Board board) {
+        Piece piece = move.PIECE;
+        Position pos = move.POS;
+        MoveType moveType = move.MOVETYPE;
+        boolean isCapture = move.CAPTURE;
+        boolean isCheck = move.CHECK;
 
+        // Castling cannot be a capture
         if (moveType == MoveType.KINGSIDE_CASTLE || moveType == MoveType.QUEENSIDE_CASTLE) {
-            if (!(piece instanceof King) || !(altPiece instanceof Rook)) {
-                return false; // Castling can only be performed by rooks and kings
-            }
+            if (isCapture)
+                return false;
         }
 
-        if (moveType == MoveType.EN_PASSANT && !(piece instanceof Pawn)) {
-            return false; // En passant can only be performed by pawns
+        // En passant and promotion by a non-pawn piece
+        if (moveType == MoveType.EN_PASSANT || moveType == MoveType.PROMOTION) {
+            if (!(piece instanceof Pawn))
+                return false; // En passant can only be performed by pawns
         }
 
-        if (moveType == MoveType.PROMOTION) {
-            if (!(piece instanceof Pawn)) {
-                return false; // Promotion can only be performed by pawns
-            }
-        }
+        // Move is not possible for the piece
+        if (!isValidMove(move, board))
+            return false; 
 
-        if (move.getAltPiece() == null ^ move.getAltPos() == null) {
-            return false; // If one is null, the other must also be null
-        }
+        // Move is a check, but does not put opponent in check
+        Board newBoard = board.copy();
+        newBoard.executeMove(move);
 
-        if (isImpossibleMove(move, board)) {
-            return false; // Move is not valid for the piece
-        }
-        if (board.inCheck(piece.getColour())) {
-            return false; // Move puts the player's own king in check
-        }
-        if (isCapture && board.getSquare(move.getPos()) == null) {
-            return false; // Move is a capture but there is no piece to capture
-        }
+        Colour newColour = (move.PIECE.getColour() == Colour.WHITE) ? Colour.BLACK : Colour.WHITE;
+        if (isCheck && BoardStateValidation.isInCheck(newColour, newBoard))
+            return false;
+
+        // Move is a capture but there is no piece to capture
+        if (isCapture && board.getSquare(pos) == null)
+            return false;
+
         return true;
-    }
-
-    // REQUIRES: move != null
-    // board != null
-    // EFFECTS: checks all possible moves and returns true if no move is found
-    private static boolean isImpossibleMove(Move move, Board board) {
-        boolean impossibleMove = true;
-        for (Move possibleMove : move.getPiece().validMoves(board)) {
-            if (possibleMove.getPos().equals(move.getPos())
-                    && possibleMove.getPiece().equals(move.getPiece())
-                    && possibleMove.getAltPiece().equals(move.getAltPiece())
-                    && possibleMove.getAltPos() == move.getAltPos()) {
-                impossibleMove = false; // Found a valid move that matches the requested move
-            }
-        }
-        return impossibleMove;
     }
 }
