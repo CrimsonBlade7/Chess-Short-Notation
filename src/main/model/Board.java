@@ -2,33 +2,27 @@ package model;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import model.misc_vars.Colour;
 import model.misc_vars.MoveType;
+import model.move_tools.BoardState;
 import model.move_tools.Move;
 import model.move_tools.Position;
 import model.pieces.*;
 
-public class Board {
+public class Board implements Cloneable {
 
     private Piece[][] board;
-    List<Piece> pieceList;
+    private List<Piece> pieceList;
+    private BoardState boardState;
 
-    public Board() { initializeBoard(); }
-
-    public Board(Board board) {
-        this.board = new Piece[8][8];
-        for (int y = 0; y < 8; y++) {
-            for (int x = 0; x < 8; x++) {
-                Piece piece = board.getSquare(new Position(x, y));
-                this.board[y][x] = piece != null ? piece.copy() : null;
-            }
-        }
-
-        for (Piece piece : board.pieceList) {
-            this.pieceList.add(piece.copy());
-        }
+    public Board() {
+        initializeBoard();
+        boardState = new BoardState(this);
     }
+
+    public BoardState getBoardState() { return boardState; }
+
+    public void setBoardState(BoardState boardState) { this.boardState = boardState; }
 
     // MODIFIES: board
     // EFFECTS: sets the board to the initial chess setup
@@ -146,30 +140,26 @@ public class Board {
     // EFFECTS: Moves a piece from the initial square (ix, iy) to the final square
     // (fx, fy)
     public void executeMove(Move move) {
-        // Check if the move is a castling move
-        if (move.getMoveType() == MoveType.NORMAL) {
-            handleNormalMove(move);
-        }
-        else if (move.getMoveType() == MoveType.KINGSIDE_CASTLE
-                || move.getMoveType() == MoveType.QUEENSIDE_CASTLE) {
-            handleCastling(move);
-        }
-        else if (move.getMoveType() == MoveType.EN_PASSANT) {
-            handleEnPassant(move);
-        }
-        else if (move.getMoveType() == MoveType.PROMOTION) {
-            handlePromotion(move);
-        }
-        else {
-            throw new IllegalArgumentException("Illegal move type: " + move.getMoveType());
-        }
-
-        if (move.isCapture()) {
-            pieceList.remove(getSquare(move.getPos()));
+        switch (move.MOVETYPE) {
+            case NORMAL:
+                handleNormalMove(move);
+                break;
+            case KINGSIDE_CASTLE:
+            case QUEENSIDE_CASTLE:
+                handleCastling(move);
+                break;
+            case EN_PASSANT:
+                handleEnPassant(move);
+                break;
+            case PROMOTION:
+                handlePromotion(move);
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid move type: " + move.MOVETYPE);
         }
     }
 
-    // REQUIRES: move.getMoveType() == MoveType.NORMAL, move is legal
+    // REQUIRES: move.MOVETYPE == MoveType.NORMAL, move is legal
     // MODIFIES: board
     // EFFECTS: Repositions the piece on the board and updates its position
     private void repositionPiece(int ix, int iy, int fx, int fy) {
@@ -178,30 +168,38 @@ public class Board {
         board[fy][fx].setPos(new Position(fx, fy));
     }
 
-    // REQUIRES: move.getMoveType() == MoveType.NORMAL, move is legal
+    // REQUIRES: move.MOVETYPE == MoveType.NORMAL, move is legal
     // MODIFIES: board
     // EFFECTS: Handles normal moves for the specified move with no captures
     private void handleNormalMove(Move move) {
-        repositionPiece(move.getPiece().getX(), move.getPiece().getY(),
-                move.getTargetX(), move.getTargetY());
+        int ix = move.PIECE.getX();
+        int iy = move.PIECE.getY();
+        int fx = move.POS.getX();;
+        int fy = move.POS.getY();
+
+        repositionPiece(ix, iy, fx, fy);
     }
 
-    // REQUIRES: move.getMoveType() == MoveTag.KINGSIDE_CASTLE or
+    // REQUIRES: move.MOVETYPE == MoveTag.KINGSIDE_CASTLE or
     // MoveTag.QUEENSIDE_CASTLE and casting is legal
     // MODIFIES: board
     // EFFECTS: Handles castling moves for the specified move
     private void handleCastling(Move move) {
-        int row = move.getPiece().getColour() == Colour.WHITE ? 0 : 7;
-        if (move.getMoveType() == MoveType.KINGSIDE_CASTLE) {
-            repositionPiece(4, row, 6, row);
-            repositionPiece(7, row, 5, row);
+        int row = move.PIECE.getColour() == Colour.WHITE ? 0 : 7;
+        if (null == move.MOVETYPE) {
+            throw new IllegalArgumentException("Invalid castling move type: " + move.MOVETYPE);
         }
-        else if (move.getMoveType() == MoveType.QUEENSIDE_CASTLE) {
-            repositionPiece(4, row, 2, row);
-            repositionPiece(0, row, 3, row);
-        }
-        else {
-            throw new IllegalArgumentException("Invalid castling move type: " + move.getMoveType());
+        else switch (move.MOVETYPE) {
+            case KINGSIDE_CASTLE:
+                repositionPiece(4, row, 6, row);
+                repositionPiece(7, row, 5, row);
+                break;
+            case QUEENSIDE_CASTLE:
+                repositionPiece(4, row, 2, row);
+                repositionPiece(0, row, 3, row);
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid castling move type: " + move.MOVETYPE);
         }
 
     }
@@ -211,13 +209,13 @@ public class Board {
     // MODIFIES: board
     // EFFECTS: Handles en passant moves for the specified move
     private void handleEnPassant(Move move) {
-        int fx = move.getTargetX();
-        int fy = move.getTargetY();
-        int ix = move.getInitialX();
-        int iy = move.getInitialY();
+        int ix = move.PIECE.getX();
+        int iy = move.PIECE.getY();
+        int fx = move.POS.getX();;
+        int fy = move.POS.getY();
 
         // Remove the captured pawn
-        if (move.getPiece().getColour() == Colour.WHITE) {
+        if (move.PIECE.getColour() == Colour.WHITE) {
             board[fy - 1][fx] = null; // Capture the black pawn
         }
         else {
@@ -236,34 +234,39 @@ public class Board {
     // MODIFIES: board
     // EFFECTS: Handles promotion moves for the specified move
     private void handlePromotion(Move move) {
-        int fx = move.getTargetX();
-        int fy = move.getTargetY();
-
-        Piece piece = move.getPiece();
+        int fx = move.POS.getX();
+        int fy = move.POS.getY();
+        int ix = move.PIECE.getX();
+        int iy = move.PIECE.getY();
 
         // Remove the pawn from the board
+        board[iy][ix] = null;
         board[fy][fx] = null;
 
         // Create a new piece based on the promotion type
-        if (move.getMoveType() == MoveType.PROMOTION) {
-            board[move.getPiece().getColour() == Colour.WHITE ? 7 : 0][fx] = move.getPromotePiece();
+        if (move.MOVETYPE == MoveType.PROMOTION) {
+            // board[move.PIECE.getColour() == Colour.WHITE ? 7 : 0][fx] = move.getPromotePiece();
             // Promote to the specified piece
         }
     }
-    
+
     // REQUIRES: board != null
     // MODIFIES: board
-    // EFFECTS: Returns a deep copy of the board
-    public Board copy() {
-        Board copy = new Board();
+    // EFFECTS: Returns a deep clone of the board
+    @Override
+    public Board clone() throws CloneNotSupportedException {
+        Board newBoard = new Board();
         for (int y = 0; y < 8; y++) {
             for (int x = 0; x < 8; x++) {
-                Piece piece = board[y][x];
-                if (piece != null) {
-                    copy.board[y][x] = piece.copy();
-                }
+                Piece piece = newBoard.getSquare(new Position(x, y));
+                this.board[y][x] = piece != null ? piece.clone() : null;
             }
         }
-        return copy;
+
+        for (Piece piece : newBoard.pieceList) {
+            this.pieceList.add(piece.clone());
+        }
+        newBoard.setBoardState(this.boardState.clone());
+        return null;
     }
 }

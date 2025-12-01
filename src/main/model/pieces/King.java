@@ -10,23 +10,39 @@ import model.move_tools.Position;
 
 public class King extends Piece {
 
-    private boolean canCastle;
+    public King(Colour colour, Position pos) { super(colour, "King", "K", pos); }
 
-    public King(Colour colour, Position pos) {
-        super(colour, "King", "K", pos);
-        canCastle = true;
-    }
-
-    public King(Colour colour, Position pos, boolean canCastle) {
-        super(colour, "King", "K", pos);
-        this.canCastle = canCastle;
-    }
+    public King(Colour colour, Position pos, boolean canCastle) { super(colour, "King", "K", pos); }
 
     @Override
     public List<Move> validMoves(Board board) {
 
         List<Move> validMoveList = new ArrayList<>();
 
+        addNormalMoves(validMoveList, board);
+
+        // Check for castling kingside
+        if (canCastle(1, board)) {
+            Position newPos = new Position(this.getX() + 2, this.getY());
+            Position rookPosition = new Position(7, this.getY());
+            Move move = new Move(this, newPos, false, MoveType.KINGSIDE_CASTLE, board.getSquare(rookPosition),
+                    rookPosition);
+            validMoveList.add(move);
+        }
+
+        // Check for castling queenside
+        if (canCastle(-1, board)) {
+            Position newPos = new Position(this.getX() - 2, this.getY());
+            Position rookPosition = new Position(0, this.getY());
+            Move move = new Move(this, newPos, false, MoveType.QUEENSIDE_CASTLE, board.getSquare(rookPosition),
+                    rookPosition);
+            validMoveList.add(move);
+        }
+
+        return validMoveList;
+    }
+
+    private void addNormalMoves(List<Move> validMoveList, Board board) {
         for (int y = -1; y <= 1; y++) {
             for (int x = -1; x <= 1; x++) {
                 if (x == 0 && y == 0) {
@@ -35,31 +51,14 @@ public class King extends Piece {
                 Position newPos = new Position(this.getX() + x, this.getY() + y);
                 if (super.isValidPosition(newPos, super.COLOUR, board)) {
                     if (board.getSquare(newPos) != null) {
-                        validMoveList.add(new Move(this, newPos, true, MoveType.NORMAL));
-                    } else {
+                        validMoveList.add(new Move(this, newPos, true, false, MoveType.NORMAL));
+                    }
+                    else {
                         validMoveList.add(new Move(this, newPos, false, MoveType.NORMAL));
                     }
                 }
             }
         }
-
-        // Check for castling kingside
-        if (canCastle(1, board)) {
-            Position newPos = new Position(this.getX() + 2, this.getY());
-            Position rookPosition = new Position(7, this.getY());
-            Move move = new Move(this, newPos, false, MoveType.KINGSIDE_CASTLE, board.getSquare(rookPosition), rookPosition);
-            validMoveList.add(move);
-        }
-
-        // Check for castling queenside
-        if (canCastle(-1, board)) {
-            Position newPos = new Position(this.getX() - 2, this.getY());
-            Position rookPosition = new Position(0, this.getY());
-            Move move = new Move(this, newPos, false, MoveType.QUEENSIDE_CASTLE, board.getSquare(rookPosition), rookPosition);
-            validMoveList.add(move);
-        }
-
-        return validMoveList;
     }
 
     // REQUIRES: direction is either 1 (kingside) or -1 (queenside)
@@ -101,5 +100,5 @@ public class King extends Piece {
     }
 
     @Override
-    public Piece copy() { return new King(COLOUR, this.pos, this.canCastle); }
+    public Piece clone() { return new King(COLOUR, this.pos, this.canCastle); }
 }

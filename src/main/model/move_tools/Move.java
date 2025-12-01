@@ -1,9 +1,7 @@
 package model.move_tools;
 
-import model.exceptions.IllegalMoveStateException;
 import model.misc_vars.Colour;
 import model.misc_vars.MoveType;
-import model.pieces.Pawn;
 import model.pieces.Piece;
 
 // Represents a move in the chess game.
@@ -18,9 +16,7 @@ public class Move {
 
     // REQUIRES: piece != null, pos != null, moveType != null
     // EFFECTS: constructs a Move object with the given parameters, throws
-    // IllegalMoveStateException if the move state is not legal
-    public Move(Piece piece, Position pos, boolean capture, boolean check, MoveType moveType)
-            throws IllegalMoveStateException {
+    public Move(Piece piece, Position pos, boolean capture, boolean check, MoveType moveType) {
         this.PIECE = piece;
         this.POS = pos;
         this.COLOUR = piece.getColour();

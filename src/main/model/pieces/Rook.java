@@ -84,7 +84,7 @@ public class Rook extends Piece {
     }
 
     @Override
-    public Piece copy() {
+    public Piece clone() {
         return new Rook(COLOUR, this.pos, this.canCastle);
     }
 }

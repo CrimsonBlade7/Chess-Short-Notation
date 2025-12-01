@@ -87,10 +87,10 @@ public class Pawn extends Piece {
     public void resetEnPassantFlag() { EN_PASSANT = false; }
 
     @Override
-    public Piece copy() {
-        Pawn copy = new Pawn(COLOUR, new Position(this.getX(), this.getY()));
-        copy.EN_PASSANT = this.EN_PASSANT;
-        return copy;
+    public Piece clone() {
+        Pawn clone = new Pawn(COLOUR, new Position(this.getX(), this.getY()));
+        clone.EN_PASSANT = this.EN_PASSANT;
+        return clone;
     }
 
     // REQUIRES: pos is within the bounds of the board (0 <= x, y < 8)

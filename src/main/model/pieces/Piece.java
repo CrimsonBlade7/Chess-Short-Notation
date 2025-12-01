@@ -1,18 +1,16 @@
 package model.pieces;
 
 import java.util.List;
-
 import model.Board;
 import model.misc_vars.Colour;
 import model.move_tools.Move;
 import model.move_tools.Position;
 
 // Represents a generic chess piece.
-public abstract class Piece {
+public abstract class Piece implements Cloneable {
     protected final Colour COLOUR;
     private final String NAME, SYMBOL;
     protected Position pos;
-
 
     public Piece(Colour colour, String name, String symbol, Position pos) {
         COLOUR = colour;
@@ -40,6 +38,17 @@ public abstract class Piece {
     // EFFECTS: returns a list of possible moves for the at position (x, y)
     // on the given board
     public abstract List<Move> validMoves(Board board);
+
+    public boolean isCheck(Board board, Move move) {
+        Board simulatedBoard;
+        try {
+            simulatedBoard = board.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
+        simulatedBoard.executeMove(move);
+        return simulatedBoard.getBoardState().isInCheck(this.COLOUR, simulatedBoard);
+    }
 
     @Override
     public String toString() {
@@ -72,22 +81,26 @@ public abstract class Piece {
         if (NAME == null) {
             if (other.NAME != null)
                 return false;
-        } else if (!NAME.equals(other.NAME))
+        }
+        else if (!NAME.equals(other.NAME))
             return false;
         if (SYMBOL == null) {
             if (other.SYMBOL != null)
                 return false;
-        } else if (!SYMBOL.equals(other.SYMBOL))
+        }
+        else if (!SYMBOL.equals(other.SYMBOL))
             return false;
         if (pos == null) {
             if (other.pos != null)
                 return false;
-        } else if (!pos.equals(other.pos))
+        }
+        else if (!pos.equals(other.pos))
             return false;
         return true;
     }
 
-    public abstract Piece copy();
+    @Override
+    public abstract Piece clone();
 
     // REQUIRES: board != null
     // EFFECTS: Checks if the move to pos is not friendly and is within the bounds

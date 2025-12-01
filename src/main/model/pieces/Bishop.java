@@ -2,7 +2,6 @@ package model.pieces;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import model.Board;
 import model.misc_vars.Colour;
 import model.misc_vars.MoveType;
@@ -26,24 +25,23 @@ public class Bishop extends Piece {
         };
 
         for (int[] dir : directions) {
-            boolean continueSearch = true;
-            do {
+            while (true) {
                 Position newPos = new Position(this.getX() + dir[0], this.getY() + dir[1]);
-                if (super.isValidPosition(newPos, super.COLOUR, board)) {
-                    if (!super.isEmptySquare(newPos, board)) {
-                        validMoveList.add(new Move(this, newPos, true, MoveType.NORMAL));
-                        continueSearch = false; // Stop searching in this direction if the move is a capture
-                    } else {
-                        validMoveList.add(new Move(this, newPos, false, MoveType.NORMAL));
-                    }
-                } else {
-                    continueSearch = false; // Stop searching in this direction if the move is invalid
+                if (!super.isValidPosition(newPos, super.COLOUR, board))
+                    break;
+
+                if (super.isEmptySquare(newPos, board)) {
+                    validMoveList.add(new Move(this, newPos, false, false, MoveType.NORMAL));
                 }
-            } while (continueSearch);
+                else {
+                    validMoveList.add(new Move(this, newPos, true, false, MoveType.NORMAL));
+                    break; // Stop searching in this direction if the move is a capture
+                }
+            }
         }
         return validMoveList;
     }
 
     @Override
-    public Piece copy() { return new Bishop(COLOUR, this.pos); }
+    public Piece clone() { return new Bishop(COLOUR, this.pos); }
 }

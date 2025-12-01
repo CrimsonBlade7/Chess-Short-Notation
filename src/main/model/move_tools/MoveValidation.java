@@ -5,26 +5,31 @@ import model.misc_vars.Colour;
 import model.misc_vars.MoveType;
 import model.pieces.*;
 
-// Validates moves made in the chess game.
+// Checks if a move is self-consistent, valid, and legal
+//  self-consistent: the move's attributes do not contradict each other
+//  valid: the move exists within the piece's possible moves
+//  legal: the move does not put own king in check, is valid, and is self-consistent
 public class MoveValidation {
 
     // REQUIRES: move != null && board != null
-    // EFFECTS: returns true if the move is a valid and the resultant board is in a
-    // legal state
-    public static boolean isLegalMove(Move move, Board board) {
-        if (!isLegalMoveState(move, board)) 
+    // EFFECTS: returns true if the move is a valid and the resultant board is legal
+    // state
+    public static boolean isLegal(Move move, Board board) {
+        if (!isSelfConsistent(move, board))
             return false;
-        
-        if (!isValidMove(move, board)) 
+
+        if (!isValidMove(move, board))
             return false;
 
         // If own king is in check, move is not legal
-        Board newBoard = board.copy();
-        newBoard.executeMove(move);
-        if (BoardStateValidation.isInCheck(move.COLOUR, newBoard))
-            return false;
-        
-        return true;
+        Board newBoard;
+        try {
+            newBoard = board.clone();
+            newBoard.executeMove(move);
+            return !board.getBoardState().isInCheck(move.COLOUR, newBoard);
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     // EFFECTS: returns true if the move exists within the list of all pieces'
@@ -40,7 +45,7 @@ public class MoveValidation {
 
     // EFFECTS: validates the move type for given move and board, returns true if
     // valid, false otherwise
-    public static boolean isLegalMoveState(Move move, Board board) {
+    private static boolean isSelfConsistent(Move move, Board board) {
         Piece piece = move.PIECE;
         Position pos = move.POS;
         MoveType moveType = move.MOVETYPE;
@@ -61,20 +66,21 @@ public class MoveValidation {
 
         // Move is not possible for the piece
         if (!isValidMove(move, board))
-            return false; 
+            return false;
 
         // Move is a check, but does not put opponent in check
-        Board newBoard = board.copy();
-        newBoard.executeMove(move);
-
+        Board newBoard;
+        try {
+            newBoard = board.clone();
+            newBoard.executeMove(move);
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
         Colour newColour = (move.PIECE.getColour() == Colour.WHITE) ? Colour.BLACK : Colour.WHITE;
-        if (isCheck && BoardStateValidation.isInCheck(newColour, newBoard))
+        if (isCheck && board.getBoardState().isInCheck(newColour, newBoard))
             return false;
-
         // Move is a capture but there is no piece to capture
-        if (isCapture && board.getSquare(pos) == null)
-            return false;
 
-        return true;
+        return !(isCapture && board.getSquare(pos) == null);
     }
 }

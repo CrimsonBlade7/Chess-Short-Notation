@@ -50,7 +50,7 @@ public class Queen extends Piece {
     }
 
     @Override
-    public Piece copy() {
+    public Piece clone() {
         return new Queen(COLOUR, this.getPos());
     }
 }
