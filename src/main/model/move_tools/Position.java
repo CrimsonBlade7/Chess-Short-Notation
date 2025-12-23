@@ -2,20 +2,16 @@ package model.move_tools;
 
 public final class Position {
 
-    private final int X;
-    private final int Y;
+    public final int X;
+    public final int Y;
 
     public Position(int x, int y) {
-        this.X = x;
-        this.Y = y;
+        X = x;
+        Y = y;
     }
 
-    public int getX() {
-        return X;
-    }
-
-    public int getY() {
-        return Y;
+    public Position add(Position pos) {
+        return new Position(this.X + pos.X, this.Y + pos.Y);
     }
 
     @Override

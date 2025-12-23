@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import model.misc_vars.Colour;
 import model.misc_vars.MoveType;
-import model.move_tools.BoardState;
 import model.move_tools.Move;
 import model.move_tools.Position;
 import model.pieces.*;
@@ -13,16 +12,10 @@ public class Board implements Cloneable {
 
     private Piece[][] board;
     private List<Piece> pieceList;
-    private BoardState boardState;
 
     public Board() {
         initializeBoard();
-        boardState = new BoardState(this);
     }
-
-    public BoardState getBoardState() { return boardState; }
-
-    public void setBoardState(BoardState boardState) { this.boardState = boardState; }
 
     // MODIFIES: board
     // EFFECTS: sets the board to the initial chess setup
@@ -109,7 +102,7 @@ public class Board implements Cloneable {
     // board != null
     // EFFECTS: returns the piece at the specified position, or null if the square
     // is
-    public Piece getSquare(Position pos) { return board[pos.getY()][pos.getX()]; }
+    public Piece getSquare(Position pos) { return board[pos.Y][pos.X]; }
 
     @Override
     public String toString() {
@@ -141,21 +134,11 @@ public class Board implements Cloneable {
     // (fx, fy)
     public void executeMove(Move move) {
         switch (move.MOVETYPE) {
-            case NORMAL:
-                handleNormalMove(move);
-                break;
-            case KINGSIDE_CASTLE:
-            case QUEENSIDE_CASTLE:
-                handleCastling(move);
-                break;
-            case EN_PASSANT:
-                handleEnPassant(move);
-                break;
-            case PROMOTION:
-                handlePromotion(move);
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid move type: " + move.MOVETYPE);
+            case NORMAL -> handleNormalMove(move);
+            case KINGSIDE_CASTLE, QUEENSIDE_CASTLE -> handleCastling(move);
+            case EN_PASSANT -> handleEnPassant(move);
+            case PROMOTION -> handlePromotion(move);
+            default -> throw new IllegalArgumentException("Invalid move type: " + move.MOVETYPE);
         }
     }
 
@@ -174,8 +157,8 @@ public class Board implements Cloneable {
     private void handleNormalMove(Move move) {
         int ix = move.PIECE.getX();
         int iy = move.PIECE.getY();
-        int fx = move.POS.getX();;
-        int fy = move.POS.getY();
+        int fx = move.POS.X;
+        int fy = move.POS.Y;
 
         repositionPiece(ix, iy, fx, fy);
     }
@@ -211,8 +194,8 @@ public class Board implements Cloneable {
     private void handleEnPassant(Move move) {
         int ix = move.PIECE.getX();
         int iy = move.PIECE.getY();
-        int fx = move.POS.getX();;
-        int fy = move.POS.getY();
+        int fx = move.POS.X;
+        int fy = move.POS.Y;
 
         // Remove the captured pawn
         if (move.PIECE.getColour() == Colour.WHITE) {
@@ -234,8 +217,8 @@ public class Board implements Cloneable {
     // MODIFIES: board
     // EFFECTS: Handles promotion moves for the specified move
     private void handlePromotion(Move move) {
-        int fx = move.POS.getX();
-        int fy = move.POS.getY();
+        int fx = move.POS.X;
+        int fy = move.POS.Y;
         int ix = move.PIECE.getX();
         int iy = move.PIECE.getY();
 
@@ -266,7 +249,6 @@ public class Board implements Cloneable {
         for (Piece piece : newBoard.pieceList) {
             this.pieceList.add(piece.clone());
         }
-        newBoard.setBoardState(this.boardState.clone());
         return null;
     }
 }

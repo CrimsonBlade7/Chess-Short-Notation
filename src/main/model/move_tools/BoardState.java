@@ -8,6 +8,7 @@ import model.pieces.Pawn;
 // Stores information about enpassant, castling rights, etc.
 public class BoardState {
 
+    private Board board;
     private Colour currentTurn;
     private Pawn enpassantTarget;
     private boolean whiteCanCastle;
@@ -16,6 +17,17 @@ public class BoardState {
     // REQUIRES: board is not null
     // EFFECTS: initializes the board state with the given parameters
     public BoardState() {
+        board = new Board();
+        currentTurn = Colour.WHITE;
+        enpassantTarget = null;
+        whiteCanCastle = true;
+        blackCanCastle = true;
+    }
+    
+    // REQUIRES: board is not null
+    // EFFECTS: initializes the board state with the given parameters
+    public BoardState(Board board) {
+        this.board = board;
         currentTurn = Colour.WHITE;
         enpassantTarget = null;
         whiteCanCastle = true;
@@ -48,5 +60,16 @@ public class BoardState {
 
     public boolean isInCheck(Colour colour, Board board) {
         throw new UnsupportedOperationException("Not implemented yet");
+    }
+
+    @Override
+    public BoardState clone() {
+        BoardState newState = new BoardState();
+        newState.board = this.board;
+        newState.currentTurn = this.currentTurn;
+        newState.enpassantTarget = this.enpassantTarget;
+        newState.whiteCanCastle = this.whiteCanCastle;
+        newState.blackCanCastle = this.blackCanCastle;
+        return newState;
     }
 }

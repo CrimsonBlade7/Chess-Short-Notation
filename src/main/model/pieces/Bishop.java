@@ -17,16 +17,17 @@ public class Bishop extends Piece {
 
         List<Move> validMoveList = new ArrayList<>();
 
-        int[][] directions = {
-                { -1, 1 }, // Top-left
-                { 1, 1 }, // Top-right
-                { -1, -1 }, // Bottom-left
-                { 1, -1 } // Bottom-right
+        Position[] directions = {
+                new Position(-1, 1), // Top-left
+                new Position(1, 1), // Top-right
+                new Position(-1, -1), // Bottom-left
+                new Position(1, -1) // Bottom-right
         };
 
-        for (int[] dir : directions) {
+        for (Position dir : directions) {
+            Position currentPos = new Position(this.getX(), this.getY());
             while (true) {
-                Position newPos = new Position(this.getX() + dir[0], this.getY() + dir[1]);
+                Position newPos = currentPos.add(dir);
                 if (!super.isValidPosition(newPos, super.COLOUR, board))
                     break;
 
