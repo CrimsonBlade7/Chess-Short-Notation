@@ -3,7 +3,6 @@ package model.pieces;
 import java.util.ArrayList;
 import java.util.List;
 
-import model.Board;
 import model.misc_vars.Colour;
 import model.misc_vars.MoveType;
 import model.move_tools.Move;
@@ -11,16 +10,12 @@ import model.move_tools.Position;
 
 public class Pawn extends Piece {
 
-    boolean EN_PASSANT;
-
     public Pawn(Colour colour, Position pos) {
         super(colour, "Pawn", "P", pos);
-        EN_PASSANT = false;
     }
 
     public Pawn(Colour colour, Position pos, boolean EN_PASSANT) {
         super(colour, "Pawn", "P", pos);
-        this.EN_PASSANT = EN_PASSANT;
     }
 
     @Override
@@ -58,39 +53,6 @@ public class Pawn extends Piece {
         }
 
         return validMoveList;
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = super.hashCode();
-        result = prime * result + (EN_PASSANT ? 1231 : 1237);
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (!super.equals(obj))
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        Pawn other = (Pawn) obj;
-        if (EN_PASSANT != other.EN_PASSANT)
-            return false;
-        return true;
-    }
-
-    // MODIFIES: EN_PASSANT
-    // EFFECTS: sets the EN_PASSANT flag to false
-    public void resetEnPassantFlag() { EN_PASSANT = false; }
-
-    @Override
-    public Piece clone() {
-        Pawn clone = new Pawn(COLOUR, new Position(this.getX(), this.getY()));
-        clone.EN_PASSANT = this.EN_PASSANT;
-        return clone;
     }
 
     // REQUIRES: pos is within the bounds of the board (0 <= x, y < 8)

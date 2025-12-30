@@ -1,21 +1,14 @@
-package model;
+package model.move_tools;
 
-import java.util.ArrayList;
-import java.util.List;
 import model.misc_vars.Colour;
 import model.misc_vars.MoveType;
-import model.move_tools.Move;
-import model.move_tools.Position;
 import model.pieces.*;
 
 public class Board implements Cloneable {
 
     private Piece[][] board;
-    private List<Piece> pieceList;
 
-    public Board() {
-        initializeBoard();
-    }
+    public Board() { initializeBoard(); }
 
     // MODIFIES: board
     // EFFECTS: sets the board to the initial chess setup
@@ -23,7 +16,6 @@ public class Board implements Cloneable {
 
         board = new Piece[8][8];
         // Initialize white pieces
-        pieceList = new ArrayList<>();
 
         Rook whiteRook1 = new Rook(Colour.WHITE, new Position(0, 0));
         Knight whiteKnight1 = new Knight(Colour.WHITE, new Position(1, 0));
@@ -43,22 +35,11 @@ public class Board implements Cloneable {
         board[0][6] = whiteKnight2;
         board[0][7] = whiteRook2;
 
-        pieceList.add(whiteRook1);
-        pieceList.add(whiteKnight1);
-        pieceList.add(whiteBishop1);
-        pieceList.add(whiteQueen);
-        pieceList.add(whiteKing);
-        pieceList.add(whiteBishop2);
-        pieceList.add(whiteKnight2);
-        pieceList.add(whiteRook2);
-
         for (int i = 0; i < 8; i++) {
             Pawn whitePawn = new Pawn(Colour.WHITE, new Position(i, 1));
             Pawn blackPawn = new Pawn(Colour.BLACK, new Position(i, 6));
             board[1][i] = whitePawn;
             board[6][i] = blackPawn;
-            pieceList.add(whitePawn);
-            pieceList.add(blackPawn);
         }
 
         // Initialize black pieces
@@ -79,18 +60,7 @@ public class Board implements Cloneable {
         board[7][5] = blackBishop2;
         board[7][6] = blackKnight2;
         board[7][7] = blackRook2;
-
-        pieceList.add(blackRook1);
-        pieceList.add(blackKnight1);
-        pieceList.add(blackBishop1);
-        pieceList.add(blackQueen);
-        pieceList.add(blackKing);
-        pieceList.add(blackBishop2);
-        pieceList.add(blackKnight2);
-        pieceList.add(blackRook2);
     }
-
-    public List<Piece> getPieceList() { return pieceList; }
 
     // MODIFIES: board
     // EFFECTS: sets the board to the initial chess setup
@@ -134,11 +104,11 @@ public class Board implements Cloneable {
     // (fx, fy)
     public void executeMove(Move move) {
         switch (move.MOVETYPE) {
-            case NORMAL -> handleNormalMove(move);
-            case KINGSIDE_CASTLE, QUEENSIDE_CASTLE -> handleCastling(move);
-            case EN_PASSANT -> handleEnPassant(move);
-            case PROMOTION -> handlePromotion(move);
-            default -> throw new IllegalArgumentException("Invalid move type: " + move.MOVETYPE);
+        case NORMAL -> handleNormalMove(move);
+        case KINGSIDE_CASTLE, QUEENSIDE_CASTLE -> handleCastling(move);
+        case EN_PASSANT -> handleEnPassant(move);
+        case PROMOTION -> handlePromotion(move);
+        default -> throw new IllegalArgumentException("Invalid move type: " + move.MOVETYPE);
         }
     }
 
@@ -146,9 +116,10 @@ public class Board implements Cloneable {
     // MODIFIES: board
     // EFFECTS: Repositions the piece on the board and updates its position
     private void repositionPiece(int ix, int iy, int fx, int fy) {
-        board[fy][fx] = board[iy][ix];
+        Piece piece = board[iy][ix];
+        board[fy][fx] = piece;
         board[iy][ix] = null;
-        board[fy][fx].setPos(new Position(fx, fy));
+        piece.setPos(new Position(fx, fy));
     }
 
     // REQUIRES: move.MOVETYPE == MoveType.NORMAL, move is legal
@@ -172,18 +143,18 @@ public class Board implements Cloneable {
         if (null == move.MOVETYPE) {
             throw new IllegalArgumentException("Invalid castling move type: " + move.MOVETYPE);
         }
-        else switch (move.MOVETYPE) {
-            case KINGSIDE_CASTLE:
+        else
+            switch (move.MOVETYPE) {
+            case KINGSIDE_CASTLE -> {
                 repositionPiece(4, row, 6, row);
                 repositionPiece(7, row, 5, row);
-                break;
-            case QUEENSIDE_CASTLE:
+            }
+            case QUEENSIDE_CASTLE -> {
                 repositionPiece(4, row, 2, row);
                 repositionPiece(0, row, 3, row);
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid castling move type: " + move.MOVETYPE);
-        }
+            }
+            default -> throw new IllegalArgumentException("Invalid castling move type: " + move.MOVETYPE);
+            }
 
     }
 
@@ -228,7 +199,8 @@ public class Board implements Cloneable {
 
         // Create a new piece based on the promotion type
         if (move.MOVETYPE == MoveType.PROMOTION) {
-            // board[move.PIECE.getColour() == Colour.WHITE ? 7 : 0][fx] = move.getPromotePiece();
+            // board[move.PIECE.getColour() == Colour.WHITE ? 7 : 0][fx] =
+            // move.getPromotePiece();
             // Promote to the specified piece
         }
     }
@@ -238,17 +210,13 @@ public class Board implements Cloneable {
     // EFFECTS: Returns a deep clone of the board
     @Override
     public Board clone() throws CloneNotSupportedException {
-        Board newBoard = new Board();
+        Board newBoard = (Board) super.clone();
         for (int y = 0; y < 8; y++) {
             for (int x = 0; x < 8; x++) {
                 Piece piece = newBoard.getSquare(new Position(x, y));
                 this.board[y][x] = piece != null ? piece.clone() : null;
             }
         }
-
-        for (Piece piece : newBoard.pieceList) {
-            this.pieceList.add(piece.clone());
-        }
-        return null;
+        return newBoard;
     }
 }

@@ -3,7 +3,6 @@ package model.pieces;
 import java.util.ArrayList;
 import java.util.List;
 
-import model.Board;
 import model.misc_vars.Colour;
 import model.misc_vars.MoveType;
 import model.move_tools.Move;
@@ -47,10 +46,5 @@ public class Queen extends Piece {
             } while (continueSearch);
         }
         return validMoveList;
-    }
-
-    @Override
-    public Piece clone() {
-        return new Queen(COLOUR, this.getPos());
     }
 }

@@ -1,8 +1,8 @@
 package model.pieces;
 
 import java.util.List;
-import model.Board;
 import model.misc_vars.Colour;
+import model.move_tools.BoardState;
 import model.move_tools.Move;
 import model.move_tools.Position;
 
@@ -25,9 +25,9 @@ public abstract class Piece implements Cloneable {
 
     public String getName() { return NAME; }
 
-    public int getX() { return pos.getX(); }
+    public int getX() { return pos.X; }
 
-    public int getY() { return pos.getY(); }
+    public int getY() { return pos.Y; }
 
     public Position getPos() { return pos; }
 
@@ -37,18 +37,7 @@ public abstract class Piece implements Cloneable {
     // board != null
     // EFFECTS: returns a list of possible moves for the at position (x, y)
     // on the given board
-    public abstract List<Move> validMoves(Board board);
-
-    public boolean isCheck(Board board, Move move) {
-        Board simulatedBoard;
-        try {
-            simulatedBoard = board.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new RuntimeException(e);
-        }
-        simulatedBoard.executeMove(move);
-        return simulatedBoard.getBoardState().isInCheck(this.COLOUR, simulatedBoard);
-    }
+    public abstract List<Move> validMoves(BoardState boardState);
 
     @Override
     public String toString() {
@@ -100,30 +89,28 @@ public abstract class Piece implements Cloneable {
     }
 
     @Override
-    public abstract Piece clone();
+    public Piece clone() throws CloneNotSupportedException {
+        return (Piece) super.clone();
+    }
 
     // REQUIRES: board != null
     // EFFECTS: Checks if the move to pos is not friendly and is within the bounds
     // of the board.
     // If the position is valid, returns true; otherwise, returns false.
-    protected boolean isValidPosition(Position pos, Colour colour, Board board) {
+    protected boolean isValidPosition(Position pos, Colour colour, BoardState boardState) {
 
-        int x = pos.getX();
-        int y = pos.getY();
+        int x = pos.X;
+        int y = pos.Y;
 
         if (x < 0 || x > 7 || y < 0 || y > 7) {
             return false; // Move is out of bounds
         }
 
-        if (board.getSquare(pos) != null && colour == COLOUR) {
-            return false; // Cannot capture own piece
-        }
-
-        return true;
+        return !(boardState.getSquare(pos) != null && colour == COLOUR);
     }
 
     // REQUIRES: pos is within the bounds of the board (0 <= x, y < 8)
     // board != null
     // EFFECTS: returns true if the position is empty, false otherwise
-    protected boolean isEmptySquare(Position pos, Board board) { return board.getSquare(pos) == null; }
+    protected boolean isEmptySquare(Position pos, BoardState boardState) { return boardState.getSquare(pos) == null; }
 }

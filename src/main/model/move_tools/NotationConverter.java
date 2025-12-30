@@ -1,7 +1,5 @@
 package model.move_tools;
 
-import model.Board;
-
 public class NotationConverter {
     
     // TODO: Complete stringToMove method

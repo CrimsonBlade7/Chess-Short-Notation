@@ -3,7 +3,6 @@ package model.pieces;
 import java.util.ArrayList;
 import java.util.List;
 
-import model.Board;
 import model.misc_vars.Colour;
 import model.misc_vars.MoveType;
 import model.move_tools.Move;
@@ -40,9 +39,7 @@ public class Rook extends Piece {
         if (getClass() != obj.getClass())
             return false;
         Rook other = (Rook) obj;
-        if (canCastle != other.canCastle)
-            return false;
-        return true;
+        return canCastle == other.canCastle;
     }
 
     public boolean canCastle() {
@@ -81,10 +78,5 @@ public class Rook extends Piece {
             } while (continueSearch);
         }
         return validMoveList;
-    }
-
-    @Override
-    public Piece clone() {
-        return new Rook(COLOUR, this.pos, this.canCastle);
     }
 }

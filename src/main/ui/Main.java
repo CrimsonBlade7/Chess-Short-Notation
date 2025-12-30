@@ -1,7 +1,6 @@
 package ui;
 
 import java.util.*;
-import model.Board;
 import model.misc_vars.Colour;
 
 public class Main {

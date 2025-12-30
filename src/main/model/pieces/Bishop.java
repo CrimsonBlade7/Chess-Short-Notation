@@ -2,9 +2,9 @@ package model.pieces;
 
 import java.util.ArrayList;
 import java.util.List;
-import model.Board;
 import model.misc_vars.Colour;
 import model.misc_vars.MoveType;
+import model.move_tools.BoardState;
 import model.move_tools.Move;
 import model.move_tools.Position;
 
@@ -13,7 +13,7 @@ public class Bishop extends Piece {
     public Bishop(Colour colour, Position pos) { super(colour, "Bishop", "B", pos); }
 
     @Override
-    public List<Move> validMoves(Board board) {
+    public List<Move> validMoves(BoardState boardState) {
 
         List<Move> validMoveList = new ArrayList<>();
 
@@ -28,21 +28,18 @@ public class Bishop extends Piece {
             Position currentPos = new Position(this.getX(), this.getY());
             while (true) {
                 Position newPos = currentPos.add(dir);
-                if (!super.isValidPosition(newPos, super.COLOUR, board))
+                if (!super.isValidPosition(newPos, super.COLOUR, boardState))
                     break;
-
-                if (super.isEmptySquare(newPos, board)) {
-                    validMoveList.add(new Move(this, newPos, false, false, MoveType.NORMAL));
+                boolean isCheckMove = boardState.isCheckMove(this.COLOUR, new Move(this, newPos, false, false, MoveType.NORMAL));
+                if (super.isEmptySquare(newPos, boardState)) {
+                    validMoveList.add(new Move(this, newPos, false, isCheckMove, MoveType.NORMAL));
                 }
                 else {
-                    validMoveList.add(new Move(this, newPos, true, false, MoveType.NORMAL));
+                    validMoveList.add(new Move(this, newPos, true, isCheckMove, MoveType.NORMAL));
                     break; // Stop searching in this direction if the move is a capture
                 }
             }
         }
         return validMoveList;
     }
-
-    @Override
-    public Piece clone() { return new Bishop(COLOUR, this.pos); }
 }

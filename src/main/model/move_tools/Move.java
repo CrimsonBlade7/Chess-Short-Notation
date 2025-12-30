@@ -65,9 +65,7 @@ public class Move {
             return false;
         if (CHECK != other.CHECK)
             return false;
-        if (MOVETYPE != other.MOVETYPE)
-            return false;
-        return true;
+        return MOVETYPE == other.MOVETYPE;
     }
 
    
