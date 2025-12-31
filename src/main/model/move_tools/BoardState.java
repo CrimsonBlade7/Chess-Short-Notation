@@ -61,8 +61,9 @@ public class BoardState {
     public boolean isInCheck(Colour colour) { throw new UnsupportedOperationException("Not implemented yet"); }
 
     // REQUIRES: move != null && board != null
-    // EFFECTS: returns true if the move results in a check state for the given colour
-    public boolean isCheckMove(Colour colour, Move move) {
+    // EFFECTS: returns true if the move results in a check state for the opposing colour
+    public boolean isCheckMove(Move move) {
+        Colour opponentColour = (move.PIECE.getColour() == Colour.WHITE) ? Colour.BLACK : Colour.WHITE;
         BoardState newBoardState;
         try {
             newBoardState = this.clone();
@@ -70,7 +71,7 @@ public class BoardState {
             throw new RuntimeException(e);
         }
         newBoardState.executeMove(move);
-        return newBoardState.isInCheck(colour);
+        return newBoardState.isInCheck(opponentColour);
     }
 
     // REQUIRES: pos is within the bounds of the board (0 <= x, y < 8)

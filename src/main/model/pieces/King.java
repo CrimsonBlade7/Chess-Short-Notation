@@ -35,6 +35,7 @@ public class King extends Piece {
             }
         }
 
+        // Castling
         if (this.pos.X == 4) {
             if (kingsideEmpty(boardState))
                 validMoveList.add(new Move(this, new Position(6, this.pos.Y), false, true, MoveType.KINGSIDE_CASTLE));
@@ -48,7 +49,8 @@ public class King extends Piece {
     // EFFECTS: Checks if the squares between the king and kingside rook are empty
     private boolean kingsideEmpty(BoardState boardState) {
         int y = (this.COLOUR == Colour.WHITE) ? 0 : 7;
-        return boardState.getSquare(new Position(5, y)) == null && boardState.getSquare(new Position(6, y)) == null;
+        return boardState.getSquare(new Position(5, y)) == null
+                && boardState.getSquare(new Position(6, y)) == null;
     }
 
     // REQUIRES: board != null

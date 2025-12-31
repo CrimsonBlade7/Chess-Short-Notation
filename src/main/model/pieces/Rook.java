@@ -10,46 +10,11 @@ import model.move_tools.Position;
 
 public class Rook extends Piece {
 
-    private boolean canCastle;
-
     public Rook(Colour colour, Position pos) {
         super(colour, "Rook", "R", pos);
         canCastle = true;
     }
     
-    public Rook(Colour colour, Position pos, boolean canCastle) {
-        super(colour, "Rook", "R", pos);
-        this.canCastle = canCastle;
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = super.hashCode();
-        result = prime * result + (canCastle ? 1231 : 1237);
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (!super.equals(obj))
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        Rook other = (Rook) obj;
-        return canCastle == other.canCastle;
-    }
-
-    public boolean canCastle() {
-        return canCastle;
-    }
-
-    public void disableCastle() {
-        this.canCastle = false;
-    }
-
     @Override
     public List<Move> validMoves(Board board) {
 

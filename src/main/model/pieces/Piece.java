@@ -93,22 +93,6 @@ public abstract class Piece implements Cloneable {
         return (Piece) super.clone();
     }
 
-    // REQUIRES: board != null
-    // EFFECTS: Checks if the move to pos is not friendly and is within the bounds
-    // of the board.
-    // If the position is valid, returns true; otherwise, returns false.
-    protected boolean isValidPosition(Position pos, Colour colour, BoardState boardState) {
-
-        int x = pos.X;
-        int y = pos.Y;
-
-        if (x < 0 || x > 7 || y < 0 || y > 7) {
-            return false; // Move is out of bounds
-        }
-
-        return !(boardState.getSquare(pos) != null && colour == COLOUR);
-    }
-
     // REQUIRES: pos is within the bounds of the board (0 <= x, y < 8)
     // board != null
     // EFFECTS: returns true if the position is empty, false otherwise

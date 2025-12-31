@@ -17,25 +17,23 @@ public class Knight extends Piece {
 
         List<Move> validMoveList = new ArrayList<>();
 
-        int[][] knightMoves = {
-                { -2, 1 },
-                { -1, 2 },
-                { 1, 2 },
-                { 2, 1 },
-                { 2, -1 },
-                { 1, -2 },
-                { -1, -2 },
-                { -2, -1 }
+        Position[] knightMoves = {
+                new Position(-2, 1),
+                new Position(-1, 2),
+                new Position(1, 2),
+                new Position(2, 1),
+                new Position(2, -1),
+                new Position(1, -2),
+                new Position(-1, -2),
+                new Position(-2, -1)
         };
 
-        for (int[] shift : knightMoves) {
-            Position newPos = new Position(this.getX() + shift[0], this.getY() + shift[1]);
+        for (Position shift : knightMoves) {
+            Position newPos = this.pos.add(shift);
             if (super.isValidPosition(newPos, super.COLOUR, boardState)) {
-                if (!super.isEmptySquare(newPos, boardState)) {
-                    validMoveList.add(new Move(this, newPos, true, false, MoveType.NORMAL));
-                } else {
-                    validMoveList.add(new Move(this, newPos, false, false, MoveType.NORMAL));
-                }
+                boolean isCapture = !super.isEmptySquare(newPos, boardState);
+                boolean isCheckMove = boardState.isCheckMove(this.COLOUR, new Move(this, newPos, false, false, MoveType.NORMAL));
+                validMoveList.add(new Move(this, newPos, isCapture, isCheckMove, MoveType.NORMAL));
             }
         }
 

@@ -10,25 +10,22 @@ import model.pieces.*;
 //  legal: the move does not put own king in check, is valid, and is self-consistent
 public class MoveValidation {
 
-    // REQUIRES: move != null && board != null
-    // EFFECTS: returns true if the move is a valid and the resultant board is legal
-    // state
-    public static boolean isLegal(Move move, BoardState boardState) {
-        if (!isSelfConsistent(move, boardState))
+    // REQUIRES: board != null
+    // EFFECTS: Checks if the move to pos is not friendly and is within the bounds
+    // of the board.
+    // If the position is valid, returns true; otherwise, returns false.
+    public boolean isLegalMove(Move move, BoardState boardState) {
+
+        int x = move.POS.X;
+        int y = move.POS.Y;
+
+        if (x < 0 || x > 7 || y < 0 || y > 7)
+            return false; // Move is out of bounds
+
+        if (!(boardState.getSquare(move.POS) != null && move.PIECE.getColour() == boardState.getSquare(move.POS).getColour()))
             return false;
 
-        if (!isValidMove(move, boardState))
-            return false;
-
-        // If own king is in check, move is not legal
-        BoardState newBoardState;
-        try {
-            newBoardState = boardState.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new RuntimeException(e);
-        }
-        newBoardState.getBoard().executeMove(move);
-        return !boardState.isInCheck(move.COLOUR);
+        return boardState.isCheckMove(move);
     }
 
     // EFFECTS: returns true if the move exists within the list of all pieces'
