@@ -7,7 +7,7 @@ import model.move_tools.Move;
 import model.move_tools.Position;
 
 // Represents a generic chess piece.
-public abstract class Piece implements Cloneable {
+public abstract class Piece  {
     protected final Colour COLOUR;
     private final String NAME, SYMBOL;
     protected Position pos;
@@ -86,11 +86,6 @@ public abstract class Piece implements Cloneable {
         else if (!pos.equals(other.pos))
             return false;
         return true;
-    }
-
-    @Override
-    public Piece clone() throws CloneNotSupportedException {
-        return (Piece) super.clone();
     }
 
     // REQUIRES: pos is within the bounds of the board (0 <= x, y < 8)

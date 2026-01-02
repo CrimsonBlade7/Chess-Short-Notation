@@ -22,7 +22,8 @@ public class MoveValidation {
         if (x < 0 || x > 7 || y < 0 || y > 7)
             return false; // Move is out of bounds
 
-        if (!(boardState.getSquare(move.POS) != null && move.PIECE.getColour() == boardState.getSquare(move.POS).getColour()))
+        if (!(boardState.getSquare(move.POS) != null
+                && move.PIECE.getColour() == boardState.getSquare(move.POS).getColour()))
             return false;
 
         return boardState.isCheckMove(move);
@@ -49,15 +50,23 @@ public class MoveValidation {
         boolean isCheck = move.CHECK;
 
         // Castling cannot be a capture
-        if (moveType == MoveType.KINGSIDE_CASTLE || moveType == MoveType.QUEENSIDE_CASTLE) {
-            if (isCapture)
-                return false;
-        }
+        if (isCapture && (moveType == MoveType.KINGSIDE_CASTLE || moveType == MoveType.QUEENSIDE_CASTLE))
+            return false;
 
         // En passant and promotion by a non-pawn piece
-        if (moveType == MoveType.EN_PASSANT || moveType == MoveType.PROMOTION) {
-            if (!(piece instanceof Pawn))
-                return false; // En passant can only be performed by pawns
+        if ((moveType == MoveType.EN_PASSANT || moveType == MoveType.PROMOTION) && !(piece instanceof Pawn))
+            return false;
+
+        // en passant must be a capture
+        if (moveType == MoveType.EN_PASSANT && !isCapture)
+            return false;
+
+        // Promotion must be to the last rank
+        if (moveType == MoveType.PROMOTION) {
+            if (piece.getColour() == Colour.WHITE && pos.Y != 7)
+                return false;
+            if (piece.getColour() == Colour.BLACK && pos.Y != 0)
+                return false;
         }
 
         // Move is not possible for the piece
@@ -65,18 +74,6 @@ public class MoveValidation {
             return false;
 
         // Move is a check, but does not put opponent in check
-        BoardState newBoardState;
-        try {
-            newBoardState = boardState.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new RuntimeException(e);
-        }
-        newBoardState.getBoard().executeMove(move);
-        Colour newColour = (move.PIECE.getColour() == Colour.WHITE) ? Colour.BLACK : Colour.WHITE;
-        if (isCheck && boardState.isInCheck(newColour))
-            return false;
-        // Move is a capture but there is no piece to capture
-
-        return !(isCapture && boardState.getBoard().getSquare(pos) == null);
+        return !(isCheck && !boardState.isCheckMove(move));
     }
 }

@@ -1,12 +1,15 @@
 package model.move_tools;
 
+import java.util.HashMap;
 import model.misc_vars.Colour;
 import model.misc_vars.MoveType;
 import model.pieces.*;
 
-public class Board implements Cloneable {
+public class Board {
 
     private Piece[][] board;
+    private Integer[][] previousBoard;
+    private HashMap<Integer, Piece> pieces;
 
     public Board() { initializeBoard(); }
 
@@ -15,6 +18,8 @@ public class Board implements Cloneable {
     private void initializeBoard() {
 
         board = new Piece[8][8];
+        previousBoard = null;
+        pieces = new HashMap<>();
         // Initialize white pieces
 
         Rook whiteRook1 = new Rook(Colour.WHITE, new Position(0, 0));
@@ -34,6 +39,15 @@ public class Board implements Cloneable {
         board[0][5] = whiteBishop2;
         board[0][6] = whiteKnight2;
         board[0][7] = whiteRook2;
+
+        pieces.put(0, whiteRook1);
+        pieces.put(1, whiteKnight1);
+        pieces.put(2, whiteBishop1);
+        pieces.put(3, whiteQueen);
+        pieces.put(4, whiteKing);
+        pieces.put(5, whiteBishop2);
+        pieces.put(6, whiteKnight2);
+        pieces.put(7, whiteRook2);
 
         for (int i = 0; i < 8; i++) {
             Pawn whitePawn = new Pawn(Colour.WHITE, new Position(i, 1));
@@ -60,6 +74,15 @@ public class Board implements Cloneable {
         board[7][5] = blackBishop2;
         board[7][6] = blackKnight2;
         board[7][7] = blackRook2;
+
+        pieces.put(8, blackRook1);
+        pieces.put(9, blackKnight1);
+        pieces.put(10, blackBishop1);
+        pieces.put(11, blackQueen);
+        pieces.put(12, blackKing);
+        pieces.put(13, blackBishop2);
+        pieces.put(14, blackKnight2);
+        pieces.put(15, blackRook2);
     }
 
     // MODIFIES: board
@@ -98,11 +121,37 @@ public class Board implements Cloneable {
         return result;
     }
 
+    // MODIFIES: previousBoard
+    // EFFECTS: creates a 2D Integer array representation of the current board
+    private Integer[][] refBoard() {
+        Integer[][] refBoard = new Integer[8][8];
+        for (int y = 0; y < 8; y++) {
+            for (int x = 0; x < 8; x++) {
+                Piece piece = board[y][x];
+                if (piece == null) {
+                    refBoard[y][x] = null;
+                }
+                else {
+                    for (HashMap.Entry<Integer, Piece> entry : pieces.entrySet()) {
+                        if (entry.getValue() == piece) {
+                            refBoard[y][x] = entry.getKey();
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return refBoard;
+    }
+
     // REQUIRES: move is legal and MoveType is not null
     // MODIFIES: board
     // EFFECTS: Moves a piece from the initial square (ix, iy) to the final square
     // (fx, fy)
     public void executeMove(Move move) {
+
+        previousBoard = refBoard();
+
         switch (move.MOVETYPE) {
         case NORMAL -> handleNormalMove(move);
         case KINGSIDE_CASTLE, QUEENSIDE_CASTLE -> handleCastling(move);
@@ -110,6 +159,32 @@ public class Board implements Cloneable {
         case PROMOTION -> handlePromotion(move);
         default -> throw new IllegalArgumentException("Invalid move type: " + move.MOVETYPE);
         }
+    }
+
+    // REQUIRES: previousBoard != null
+    // MODIFIES: board
+    // EFFECTS: Reverts the board to the previous state before the last move
+    public void undoMove() {
+        if (previousBoard == null) {
+            throw new IllegalStateException("No previous board state to revert to.");
+        }
+
+        for (int y = 0; y < 8; y++) {
+            for (int x = 0; x < 8; x++) {
+                Integer pieceId = previousBoard[y][x];
+                if (pieceId == null) {
+                    board[y][x] = null;
+                }
+                else {
+                    board[y][x] = pieces.get(pieceId);
+                    if (board[y][x] != null) {
+                        board[y][x].setPos(new Position(x, y));
+                    }
+                }
+            }
+        }
+
+        previousBoard = null; // Clear previous board after undo
     }
 
     // REQUIRES: move.MOVETYPE == MoveType.NORMAL, move is legal
@@ -203,20 +278,5 @@ public class Board implements Cloneable {
             // move.getPromotePiece();
             // Promote to the specified piece
         }
-    }
-
-    // REQUIRES: board != null
-    // MODIFIES: board
-    // EFFECTS: Returns a deep clone of the board
-    @Override
-    public Board clone() throws CloneNotSupportedException {
-        Board newBoard = (Board) super.clone();
-        for (int y = 0; y < 8; y++) {
-            for (int x = 0; x < 8; x++) {
-                Piece piece = newBoard.getSquare(new Position(x, y));
-                this.board[y][x] = piece != null ? piece.clone() : null;
-            }
-        }
-        return newBoard;
     }
 }

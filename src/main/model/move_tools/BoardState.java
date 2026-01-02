@@ -64,14 +64,10 @@ public class BoardState {
     // EFFECTS: returns true if the move results in a check state for the opposing colour
     public boolean isCheckMove(Move move) {
         Colour opponentColour = (move.PIECE.getColour() == Colour.WHITE) ? Colour.BLACK : Colour.WHITE;
-        BoardState newBoardState;
-        try {
-            newBoardState = this.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new RuntimeException(e);
-        }
-        newBoardState.executeMove(move);
-        return newBoardState.isInCheck(opponentColour);
+        board.executeMove(move);
+        boolean isInCheck = isInCheck(opponentColour);
+        board.undoMove();
+        return isInCheck;
     }
 
     // REQUIRES: pos is within the bounds of the board (0 <= x, y < 8)
@@ -81,15 +77,4 @@ public class BoardState {
     public Piece getSquare(Position pos) { return board.getSquare(pos); }
 
     public void executeMove(Move move) { board.executeMove(move); }
-
-    @Override
-    public BoardState clone() throws CloneNotSupportedException {
-        BoardState newState = (BoardState) super.clone();
-        newState.board = this.board;
-        newState.currentTurn = this.currentTurn;
-        newState.enpassantTarget = this.enpassantTarget;
-        newState.whiteCanCastle = this.whiteCanCastle;
-        newState.blackCanCastle = this.blackCanCastle;
-        return newState;
-    }
 }
