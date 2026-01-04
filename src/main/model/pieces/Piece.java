@@ -10,13 +10,11 @@ import model.move_tools.Position;
 public abstract class Piece  {
     protected final Colour COLOUR;
     private final String NAME, SYMBOL;
-    protected Position pos;
 
-    public Piece(Colour colour, String name, String symbol, Position pos) {
+    public Piece(Colour colour, String name, String symbol) {
         COLOUR = colour;
         NAME = name;
         SYMBOL = symbol;
-        this.pos = pos;
     }
 
     public Colour getColour() { return COLOUR; }
@@ -25,25 +23,11 @@ public abstract class Piece  {
 
     public String getName() { return NAME; }
 
-    public int getX() { return pos.X; }
-
-    public int getY() { return pos.Y; }
-
-    public Position getPos() { return pos; }
-
-    public void setPos(Position pos) { this.pos = pos; }
-
     // REQUIRES: x and y are within the bounds of the board (0 <= x, y < 8)
     // board != null
     // EFFECTS: returns a list of possible moves for the at position (x, y)
     // on the given board
-    public abstract List<Move> validMoves(BoardState boardState);
-
-    @Override
-    public String toString() {
-        return "Piece [ COLOUR=" + COLOUR + ", NAME=" + NAME + ", SYMBOL=" + SYMBOL
-                + ", pos=" + pos + "]";
-    }
+    public abstract List<Move> validMoves(BoardState boardState, Position pos);
 
     @Override
     public int hashCode() {
@@ -52,7 +36,6 @@ public abstract class Piece  {
         result = prime * result + ((COLOUR == null) ? 0 : COLOUR.hashCode());
         result = prime * result + ((NAME == null) ? 0 : NAME.hashCode());
         result = prime * result + ((SYMBOL == null) ? 0 : SYMBOL.hashCode());
-        result = prime * result + ((pos == null) ? 0 : pos.hashCode());
         return result;
     }
 
@@ -78,12 +61,6 @@ public abstract class Piece  {
                 return false;
         }
         else if (!SYMBOL.equals(other.SYMBOL))
-            return false;
-        if (pos == null) {
-            if (other.pos != null)
-                return false;
-        }
-        else if (!pos.equals(other.pos))
             return false;
         return true;
     }

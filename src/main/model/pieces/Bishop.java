@@ -11,10 +11,10 @@ import model.move_tools.Position;
 
 public class Bishop extends Piece {
 
-    public Bishop(Colour colour, Position pos) { super(colour, "Bishop", "B", pos); }
+    public Bishop(Colour colour, Position pos) { super(colour, "Bishop", "B"); }
 
     @Override
-    public List<Move> validMoves(BoardState boardState) {
+    public List<Move> validMoves(BoardState boardState, Position pos) {
 
         List<Move> validMoveList = new ArrayList<>();
 
@@ -26,18 +26,16 @@ public class Bishop extends Piece {
         };
 
         for (Position dir : directions) {
-            Position currentPos = new Position(this.getX(), this.getY());
+            Position currentPos = pos;
 
             // Explore in the current direction until an invalid move or capture is encountered
             while (true) {
                 Position newPos = currentPos.add(dir);
                 boolean isCapture = !super.isEmptySquare(newPos, boardState);
-                boolean isCheckMove = boardState.isCheckMove(new Move(this, newPos, isCapture, false, MoveType.NORMAL));
-                Move move = new Move(this, newPos, isCapture, isCheckMove, MoveType.NORMAL);
-                
-                if (!MoveValidation.isLegalMove(move, boardState))
-                    break;
-                if (super.isEmptySquare(newPos, boardState)) {
+                Colour checkColour = this.getColour() == Colour.WHITE ? Colour.BLACK : Colour.WHITE;
+                boolean isCheckMove = MoveValidation.isCheckMove(new Move(this, newPos, MoveType.NORMAL), checkColour, boardState);
+
+                if (!isCapture) {
                     validMoveList.add(new Move(this, newPos, false, isCheckMove, MoveType.NORMAL));
                 }
                 else {

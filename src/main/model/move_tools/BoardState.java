@@ -1,5 +1,6 @@
 package model.move_tools;
 
+import java.util.ArrayList;
 import model.misc_vars.Colour;
 import model.pieces.Pawn;
 import model.pieces.Piece;
@@ -13,6 +14,7 @@ public class BoardState {
     private Pawn enpassantTarget;
     private boolean whiteCanCastle;
     private boolean blackCanCastle;
+    private ArrayList<Move> moveHistory;
 
     // REQUIRES: board is not null
     // EFFECTS: initializes the board state with the given parameters
@@ -22,6 +24,7 @@ public class BoardState {
         enpassantTarget = null;
         whiteCanCastle = true;
         blackCanCastle = true;
+        moveHistory = new ArrayList<>();
     }
 
     // REQUIRES: board is not null
@@ -32,6 +35,7 @@ public class BoardState {
         enpassantTarget = null;
         whiteCanCastle = true;
         blackCanCastle = true;
+        moveHistory = new ArrayList<>();
     }
 
     public Board getBoard() { return board; }
@@ -53,6 +57,10 @@ public class BoardState {
     public boolean blackCanCastle() { return blackCanCastle; }
 
     public void setBlackCanCastle(boolean blackCanCastle) { this.blackCanCastle = blackCanCastle; }
+    
+    public ArrayList<Move> getMoveHistory() { return moveHistory; }
+
+    public void setMoveHistory(ArrayList<Move> moveHistory) { this.moveHistory = moveHistory; }
 
     public boolean isCheckmate(Colour colour) { throw new UnsupportedOperationException("Not implemented yet"); }
 
