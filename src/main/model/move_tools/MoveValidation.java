@@ -10,10 +10,12 @@ import model.pieces.*;
 //  legal: the move does not put own king in check, is valid, and is self-consistent
 public class MoveValidation {
 
-    // REQUIRES: board != null
-    // EFFECTS: Checks if the move to pos is not friendly and is within the bounds
-    // of the board.
-    // If the position is valid, returns true; otherwise, returns false.
+    // REQUIRES: board != null, move is valid
+    // EFFECTS: Move is legal if:
+    // 1. Is self-consistent
+    // 2. The target square is not friendly
+    // 3. Is within the bounds
+    // 4. Does not put own king in check
     public boolean isLegalMove(Move move, BoardState boardState) {
 
         int x = move.POS.X;
@@ -26,7 +28,22 @@ public class MoveValidation {
                 && move.PIECE.getColour() == boardState.getSquare(move.POS).getColour()))
             return false;
 
-        return boardState.isCheckMove(move);
+        if (!isSelfConsistent(move, boardState))
+            return false;
+
+        // Simulate the move and check if own king is in check
+        Colour ownColour = move.PIECE.getColour();
+        return !isCheckMove(move, ownColour, boardState);
+    }
+
+    // REQUIRES: move != null && boardState != null
+    // EFFECTS: returns true if the move results in a check state for the given
+    // colour
+    public static boolean isCheckMove(Move move, Colour colour, BoardState boardState) {
+        boardState.getBoard().executeMove(move);
+        boolean isInCheck = boardState.isInCheck(colour);
+        boardState.getBoard().undoMove();
+        return isInCheck;
     }
 
     // EFFECTS: returns true if the move exists within the list of all pieces'
@@ -74,6 +91,7 @@ public class MoveValidation {
             return false;
 
         // Move is a check, but does not put opponent in check
-        return !(isCheck && !boardState.isCheckMove(move));
+        return !(isCheck
+                && !isCheckMove(move, (piece.getColour() == Colour.WHITE) ? Colour.BLACK : Colour.WHITE, boardState));
     }
 }

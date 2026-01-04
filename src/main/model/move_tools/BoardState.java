@@ -60,16 +60,6 @@ public class BoardState {
 
     public boolean isInCheck(Colour colour) { throw new UnsupportedOperationException("Not implemented yet"); }
 
-    // REQUIRES: move != null && board != null
-    // EFFECTS: returns true if the move results in a check state for the opposing colour
-    public boolean isCheckMove(Move move) {
-        Colour opponentColour = (move.PIECE.getColour() == Colour.WHITE) ? Colour.BLACK : Colour.WHITE;
-        board.executeMove(move);
-        boolean isInCheck = isInCheck(opponentColour);
-        board.undoMove();
-        return isInCheck;
-    }
-
     // REQUIRES: pos is within the bounds of the board (0 <= x, y < 8)
     // board != null
     // EFFECTS: returns the piece at the specified position, or null if the square

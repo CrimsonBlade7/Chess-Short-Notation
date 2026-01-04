@@ -10,9 +10,7 @@ public final class Position {
         Y = y;
     }
 
-    public Position add(Position pos) {
-        return new Position(this.X + pos.X, this.Y + pos.Y);
-    }
+    public Position add(Position pos) { return new Position(this.X + pos.X, this.Y + pos.Y);}
 
     @Override
     public String toString() {
