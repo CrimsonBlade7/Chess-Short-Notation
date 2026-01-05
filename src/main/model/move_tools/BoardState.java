@@ -1,7 +1,9 @@
 package model.move_tools;
 
 import java.util.ArrayList;
+import model.exceptions.ImpossibleMoveStateException;
 import model.misc_vars.Colour;
+import model.misc_vars.MoveType;
 import model.pieces.Piece;
 
 // Manages the board state, such as check, checkmate, and stalemate.
@@ -14,11 +16,12 @@ public class BoardState {
     private static final int BQ = 1 << 3;
 
     private Board board;
+    
     private Colour currentTurn;
     private Position enpassantTarget;
-
     private int castlingRights;
     private int halfMoveClock;
+
     private ArrayList<Move> moveHistory;
 
     // REQUIRES: board is not null
@@ -61,8 +64,15 @@ public class BoardState {
 
     // MODIFIES: board, moveHistory
     // EFFECTS: executes the given move on the board and updates the move history
-    public void executeMove(Move move) {
-        board.executeMove(move);
+    public void executeMove(Move move) throws ImpossibleMoveStateException {
+        MoveType moveType = MoveValidation.findMoveType(move);
+        switch (moveType) {
+        case NORMAL -> handleNormalMove(move);
+        case EN_PASSANT -> handleEnPassant(move);
+        case CASTLING -> handleCastling(move);
+        case PROMOTION -> handlePromotion(move);
+        default -> throw new IllegalArgumentException("Unexpected value: " + moveType);
+        }
         moveHistory.add(move);
     }
 
@@ -72,9 +82,48 @@ public class BoardState {
     public void undoMove() {
         if (!moveHistory.isEmpty()) {
             Move move = moveHistory.get(moveHistory.size() - 1);
-            board.undoMove(move);
+            board.setSquare(null, move.END_POS_1);
+            board.setSquare(null, move.END_POS_2);
+            board.setSquare(move.PIECE_1, move.START_POS_1);
+            board.setSquare(move.PIECE_2, move.START_POS_2);
+
+            currentTurn = move.PREV_TURN;
+            enpassantTarget = move.ENPASSANT_TARGET;
+            castlingRights = move.PREV_CASTLING_RIGHTS;
+            halfMoveClock = move.PREV_HALF_MOVE_CLOCK;
+
             moveHistory.remove(moveHistory.size() - 1);
         }
+    }
+
+    // REQUIRES: move.MOVETYPE == MoveType.NORMAL
+    // MODIFIES: board
+    // EFFECTS: Handles normal moves for the specified move with no captures
+    private void handleNormalMove(Move move) {
+
+    }
+
+    // REQUIRES: move.MOVETYPE is a castling move
+    // MODIFIES: board
+    // EFFECTS: Handles castling moves for the specified move
+    private void handleCastling(Move move) {
+
+    }
+
+    // TODO: add method to handle en passant
+    // REQUIRES: move.getMoveTags == MoveTag.EN_PASSANT
+    // MODIFIES: board
+    // EFFECTS: Handles en passant moves for the specified move
+    private void handleEnPassant(Move move) {
+
+    }
+
+    // TODO: handle promotion, add pieces to list
+    // REQUIRES: move.getMoveTag == MoveTag.PROMOTION and move is legal
+    // MODIFIES: board
+    // EFFECTS: Handles promotion moves for the specified move
+    private void handlePromotion(Move move) {
+
     }
 
     public Board getBoard() { return board; }

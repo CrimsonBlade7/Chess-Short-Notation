@@ -1,6 +1,5 @@
 package model.move_tools;
 
-import model.exceptions.InconsistentMoveException;
 import model.misc_vars.Colour;
 import model.pieces.*;
 
@@ -70,9 +69,27 @@ public class Board {
 
     // REQUIRES: pos is within the bounds of the board (0 <= x, y < 8)
     // board != null
-    // EFFECTS: returns the piece at the specified position, or null if the square
-    // is
+    // EFFECTS: returns the piece at the specified position, or null
     public Piece getSquare(Position pos) { return board[pos.Y][pos.X]; }
+
+    // REQUIRES: pos is within the bounds of the board (0 <= x, y < 8)
+    // board != null
+    // MODIFIES: board
+    // EFFECTS: sets the square to the given piece
+    public void setSquare(Piece piece, Position pos) {
+        if (pos != null)
+            board[pos.Y][pos.X] = piece;
+    }
+
+    // REQUIRES: startPos and endPos is within the bounds of the board (0 <= x, y <
+    // 8)
+    // board != null
+    // MODIFIES: board
+    // EFFECTS: moves unit on startPos to endPos and sets square at startPos to null
+    public void moveSquare(Position startPos, Position endPos) {
+        setSquare(board[startPos.Y][startPos.X], endPos);
+        board[startPos.Y][startPos.X] = null;
+    }
 
     @Override
     public String toString() {
@@ -96,64 +113,5 @@ public class Board {
         result += "\n      a   b   c   d   e   f   g   h\n\n";
 
         return result;
-    }
-
-    // MODIFIES: board
-    // EFFECTS: Moves a piece from the initial square (ix, iy) to the final square
-    // (fx, fy)
-    public void executeMove(Move move) throws InconsistentMoveException {
-        MoveValidation.isSelfConsistent(move);
-    }
-
-    // REQUIRES: previousBoard != null
-    // MODIFIES: board
-    // EFFECTS: Reverts the board to the previous state before the last move
-    public void undoMove(Move move) {
-
-    }
-
-    // REQUIRES: move.MOVETYPE == MoveType.NORMAL
-    // MODIFIES: board
-    // EFFECTS: Repositions the piece on the board and updates its position
-    private void repositionPiece(int ix, int iy, int fx, int fy) {
-        Piece piece = board[iy][ix];
-        board[fy][fx] = piece;
-        board[iy][ix] = null;
-    }
-
-    // REQUIRES: move.MOVETYPE == MoveType.NORMAL
-    // MODIFIES: board
-    // EFFECTS: Handles normal moves for the specified move with no captures
-    private void handleNormalMove(Move move) {
-
-        int ix = move.START_POS_1.X;
-        int iy = move.START_POS_1.Y;
-        int fx = move.END_POS_1.X;
-        int fy = move.END_POS_1.Y;
-
-        repositionPiece(ix, iy, fx, fy);
-    }
-
-    // REQUIRES: move.MOVETYPE is a castling move
-    // MODIFIES: board
-    // EFFECTS: Handles castling moves for the specified move
-    private void handleCastling(Move move) {
-        
-    }
-
-    // TODO: add method to handle en passant
-    // REQUIRES: move.getMoveTags == MoveTag.EN_PASSANT
-    // MODIFIES: board
-    // EFFECTS: Handles en passant moves for the specified move
-    private void handleEnPassant(Move move) {
-        
-    }
-
-    // TODO: handle promotion, add pieces to list
-    // REQUIRES: move.getMoveTag == MoveTag.PROMOTION and move is legal
-    // MODIFIES: board
-    // EFFECTS: Handles promotion moves for the specified move
-    private void handlePromotion(Move move) {
-        
     }
 }

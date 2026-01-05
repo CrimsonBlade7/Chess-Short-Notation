@@ -1,7 +1,8 @@
 package model.move_tools;
 
-import model.exceptions.InconsistentMoveException;
+import model.exceptions.ImpossibleMoveStateException;
 import model.misc_vars.Colour;
+import model.misc_vars.MoveType;
 import model.pieces.King;
 import model.pieces.Pawn;
 import model.pieces.Rook;
@@ -16,9 +17,9 @@ public class MoveValidation {
     // EFFECTS: returns true if the move results in a check state for the given
     // colour
     public static boolean isCheckMove(Move move, Colour colour, BoardState boardState) {
-        boardState.getBoard().executeMove(move, boardState);
+        boardState.executeMove(move);
         boolean isInCheck = boardState.isInCheck(colour);
-        boardState.getBoard().undoMove(move);
+        boardState.undoMove();
         return isInCheck;
     }
 
@@ -37,12 +38,26 @@ public class MoveValidation {
     // EFFECTS: Move is legal if:
     // 1. Is self-consistent
     // 2. Does not put own king in check
+    // 3. The correct colour moves
+    // 4. The piece on the starting square matches the piece in move
+    // 5. Does not capture own colour
     public boolean isLegalMove(Move move, BoardState boardState) {
 
         // Move is out of bounds
-        isSelfConsistent(move, boardState);
+        isSelfConsistent(move);
 
-        
+        // Incorrect colour moved
+        if (move.PIECE_1.getColour() != boardState.getCurrentTurn())
+            return false;
+
+        // Piece on starting square does not match piece in move
+        if (move.PIECE_1 != boardState.getSquare(move.START_POS_1))
+            return false;
+
+        // Target square is occupied by friendly piece
+        if (!(boardState.getSquare(move.END_POS_1) != null
+                && move.PIECE_1.getColour() == boardState.getSquare(move.END_POS_1).getColour()))
+            return false;
 
         // Simulate the move and check if own king is in check
         Colour ownColour = move.PIECE_1.getColour();
@@ -54,25 +69,18 @@ public class MoveValidation {
     }
 
     // REQUIRES: move != null, boardState != null
-    // EFFECTS: A move is self consistent if:
-    // 1. The target square is not friendly
-    // 2. Is within the bounds
-    public static boolean isSelfConsistent(Move move, BoardState boardState) {
+    // EFFECTS: A move is self consistent if its values do not contradict each other
+    public static boolean isSelfConsistent(Move move) {
         // general violations
         if (move.END_POS_1.X < 0 || move.END_POS_1.X > 7 || move.END_POS_1.Y < 0 || move.END_POS_1.Y > 7)
             return false;
         if (move.PIECE_1 == null)
             return false;
-        if (move.PIECE_1 != boardState.getSquare(move.START_POS_1))
-            return false;
         if (move.START_POS_1 == null || move.END_POS_1 == null)
             return false;
-        if (move.PIECE_1.getColour() != boardState.getCurrentTurn())
-            return false;
 
-        // Target square is occupied by friendly piece
-        if (!(boardState.getSquare(move.END_POS_1) != null
-                && move.PIECE_1.getColour() == boardState.getSquare(move.END_POS_1).getColour()))
+        // alt piece violations
+        if (move.PIECE_2 != null && move.START_POS_2 == null)
             return false;
 
         // castling violations
@@ -88,5 +96,23 @@ public class MoveValidation {
             return false;
 
         return true;
+    }
+
+    public static MoveType findMoveType(Move move) throws ImpossibleMoveStateException {
+        if (isSelfConsistent(move))
+            throw new ImpossibleMoveStateException("Move is inconsistent with itself:\n" + move);
+
+        if (move.PIECE_1 instanceof Pawn &&
+                move.PIECE_2 instanceof Pawn &&
+                move.END_POS_1 != move.START_POS_2)
+            return MoveType.EN_PASSANT;
+
+        if (move.PIECE_1 instanceof King && move.PIECE_2 instanceof Rook)
+            return MoveType.CASTLING;
+
+        if (move.PIECE_1 instanceof Pawn && move.PROMOTION_PIECE != null)
+            return MoveType.PROMOTION;
+
+        return MoveType.NORMAL;
     }
 }
