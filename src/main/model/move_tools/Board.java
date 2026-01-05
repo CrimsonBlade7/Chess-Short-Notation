@@ -1,7 +1,7 @@
 package model.move_tools;
 
+import model.exceptions.InconsistentMoveException;
 import model.misc_vars.Colour;
-import model.misc_vars.MoveType;
 import model.pieces.*;
 
 public class Board {
@@ -98,19 +98,11 @@ public class Board {
         return result;
     }
 
-    // REQUIRES: move is legal and MoveType is not null
     // MODIFIES: board
     // EFFECTS: Moves a piece from the initial square (ix, iy) to the final square
     // (fx, fy)
-    public void executeMove(Move move) {
-
-        switch (move.MOVETYPE) {
-        case NORMAL -> handleNormalMove(move);
-        case KINGSIDE_CASTLE, QUEENSIDE_CASTLE -> handleCastling(move);
-        case EN_PASSANT -> handleEnPassant(move);
-        case PROMOTION -> handlePromotion(move);
-        default -> throw new IllegalArgumentException("Invalid move type: " + move.MOVETYPE);
-        }
+    public void executeMove(Move move) throws InconsistentMoveException {
+        MoveValidation.isSelfConsistent(move);
     }
 
     // REQUIRES: previousBoard != null
@@ -133,6 +125,7 @@ public class Board {
     // MODIFIES: board
     // EFFECTS: Handles normal moves for the specified move with no captures
     private void handleNormalMove(Move move) {
+
         int ix = move.START_POS_1.X;
         int iy = move.START_POS_1.Y;
         int fx = move.END_POS_1.X;
@@ -145,23 +138,7 @@ public class Board {
     // MODIFIES: board
     // EFFECTS: Handles castling moves for the specified move
     private void handleCastling(Move move) {
-        int row = move.PIECE_1.getColour() == Colour.WHITE ? 0 : 7;
-        if (null == move.MOVETYPE) {
-            throw new IllegalArgumentException("Invalid castling move type: " + move.MOVETYPE);
-        }
-        else
-            switch (move.MOVETYPE) {
-            case KINGSIDE_CASTLE -> {
-                repositionPiece(4, row, 6, row);
-                repositionPiece(7, row, 5, row);
-            }
-            case QUEENSIDE_CASTLE -> {
-                repositionPiece(4, row, 2, row);
-                repositionPiece(0, row, 3, row);
-            }
-            default -> throw new IllegalArgumentException("Invalid castling move type: " + move.MOVETYPE);
-            }
-
+        
     }
 
     // TODO: add method to handle en passant
@@ -169,22 +146,7 @@ public class Board {
     // MODIFIES: board
     // EFFECTS: Handles en passant moves for the specified move
     private void handleEnPassant(Move move) {
-        int ix = move.START_POS_1.X;
-        int iy = move.START_POS_1.Y;
-        int fx = move.END_POS_1.X;
-        int fy = move.END_POS_1.Y;
-
-        // Remove the captured pawn
-        if (move.PIECE_1.getColour() == Colour.WHITE) {
-            board[fy - 1][fx] = null; // Capture the black pawn
-        }
-        else {
-            board[fy + 1][fx] = null; // Capture the white pawn
-        }
-
-        // Move the piece to the target square
-        board[fy][fx] = board[iy][ix];
-        board[iy][ix] = null;
+        
     }
 
     // TODO: handle promotion, add pieces to list
@@ -192,20 +154,6 @@ public class Board {
     // MODIFIES: board
     // EFFECTS: Handles promotion moves for the specified move
     private void handlePromotion(Move move) {
-        int ix = move.START_POS_1.X;
-        int iy = move.START_POS_1.Y;
-        int fx = move.END_POS_1.X;
-        int fy = move.END_POS_1.Y;
-
-        // Remove the pawn from the board
-        board[iy][ix] = null;
-        board[fy][fx] = null;
-
-        // Create a new piece based on the promotion type
-        if (move.MOVETYPE == MoveType.PROMOTION) {
-            // board[move.PIECE.getColour() == Colour.WHITE ? 7 : 0][fx] =
-            // move.getPromotePiece();
-            // Promote to the specified piece
-        }
+        
     }
 }

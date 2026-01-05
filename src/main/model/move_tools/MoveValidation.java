@@ -1,8 +1,10 @@
 package model.move_tools;
 
+import model.exceptions.InconsistentMoveException;
 import model.misc_vars.Colour;
-import model.misc_vars.MoveType;
-import model.pieces.*;
+import model.pieces.King;
+import model.pieces.Pawn;
+import model.pieces.Rook;
 
 // Checks if a move is self-consistent, valid, and legal
 //  self-consistent: the move's attributes do not contradict each other
@@ -14,7 +16,7 @@ public class MoveValidation {
     // EFFECTS: returns true if the move results in a check state for the given
     // colour
     public static boolean isCheckMove(Move move, Colour colour, BoardState boardState) {
-        boardState.getBoard().executeMove(move);
+        boardState.getBoard().executeMove(move, boardState);
         boolean isInCheck = boardState.isInCheck(colour);
         boardState.getBoard().undoMove(move);
         return isInCheck;
@@ -31,67 +33,16 @@ public class MoveValidation {
         return false;
     }
 
-    // EFFECTS: validates the move type for given move and board, returns true if
-    // valid, false otherwise
-    private static boolean isSelfConsistent(Move move, BoardState boardState) {
-        Piece piece = move.PIECE_1;
-        Position pos = move.END_POS_1;
-        MoveType moveType = move.MOVETYPE;
-        boolean isCapture = move.CAPTURE;
-        boolean isCheck = move.CHECK;
-
-        // Castling cannot be a capture
-        if (isCapture && (moveType == MoveType.KINGSIDE_CASTLE || moveType == MoveType.QUEENSIDE_CASTLE))
-            return false;
-
-        // En passant and promotion by a non-pawn piece
-        if ((moveType == MoveType.EN_PASSANT || moveType == MoveType.PROMOTION) && !(piece instanceof Pawn))
-            return false;
-
-        // en passant must be a capture
-        if (moveType == MoveType.EN_PASSANT && !isCapture)
-            return false;
-
-        // Promotion must be to the last rank
-        if (moveType == MoveType.PROMOTION) {
-            if (piece.getColour() == Colour.WHITE && pos.Y != 7)
-                return false;
-            if (piece.getColour() == Colour.BLACK && pos.Y != 0)
-                return false;
-        }
-
-        // Move is not possible for the piece
-        if (!isValidMove(move, boardState))
-            return false;
-
-        // Move is a check, but does not put opponent in check
-        return !(isCheck
-                && !isCheckMove(move, (piece.getColour() == Colour.WHITE) ? Colour.BLACK : Colour.WHITE, boardState));
-    }
-
     // REQUIRES: board != null, move is valid
     // EFFECTS: Move is legal if:
     // 1. Is self-consistent
-    // 2. The target square is not friendly
-    // 3. Is within the bounds
-    // 4. Does not put own king in check
+    // 2. Does not put own king in check
     public boolean isLegalMove(Move move, BoardState boardState) {
 
-        int x = move.END_POS_1.X;
-        int y = move.END_POS_1.Y;
-
         // Move is out of bounds
-        if (x < 0 || x > 7 || y < 0 || y > 7)
-            return false;
+        isSelfConsistent(move, boardState);
 
-        // Target square is occupied by friendly piece
-        if (!(boardState.getSquare(move.END_POS_1) != null
-                && move.PIECE_1.getColour() == boardState.getSquare(move.END_POS_1).getColour()))
-            return false;
-
-        // Move is not self-consistent
-        if (!isSelfConsistent(move, boardState))
-            return false;
+        
 
         // Simulate the move and check if own king is in check
         Colour ownColour = move.PIECE_1.getColour();
@@ -100,5 +51,42 @@ public class MoveValidation {
 
         // Move is a valid move
         return move.PIECE_1.validMoves(boardState, move.START_POS_1).contains(move);
+    }
+
+    // REQUIRES: move != null, boardState != null
+    // EFFECTS: A move is self consistent if:
+    // 1. The target square is not friendly
+    // 2. Is within the bounds
+    public static boolean isSelfConsistent(Move move, BoardState boardState) {
+        // general violations
+        if (move.END_POS_1.X < 0 || move.END_POS_1.X > 7 || move.END_POS_1.Y < 0 || move.END_POS_1.Y > 7)
+            return false;
+        if (move.PIECE_1 == null)
+            return false;
+        if (move.PIECE_1 != boardState.getSquare(move.START_POS_1))
+            return false;
+        if (move.START_POS_1 == null || move.END_POS_1 == null)
+            return false;
+        if (move.PIECE_1.getColour() != boardState.getCurrentTurn())
+            return false;
+
+        // Target square is occupied by friendly piece
+        if (!(boardState.getSquare(move.END_POS_1) != null
+                && move.PIECE_1.getColour() == boardState.getSquare(move.END_POS_1).getColour()))
+            return false;
+
+        // castling violations
+        if ((move.PIECE_2 instanceof Rook) && !(move.PIECE_1 instanceof King))
+            return false;
+
+        // en passant violations
+        if ((move.PIECE_2 instanceof Pawn) && !(move.PIECE_1 instanceof Pawn))
+            return false;
+
+        // promotion violations
+        if ((move.PROMOTION_PIECE != null) && !(move.PIECE_1 instanceof Pawn))
+            return false;
+
+        return true;
     }
 }
