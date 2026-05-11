@@ -3,11 +3,10 @@ package model.pieces;
 import java.util.List;
 import model.misc_vars.Colour;
 import model.move_tools.BoardState;
-import model.move_tools.Move;
 import model.move_tools.Position;
 
 // Represents a generic chess piece.
-public abstract class Piece  {
+public abstract class Piece {
     protected final Colour COLOUR;
     private final String NAME, SYMBOL;
 
@@ -25,9 +24,9 @@ public abstract class Piece  {
 
     // REQUIRES: x and y are within the bounds of the board (0 <= x, y < 8)
     // board != null
-    // EFFECTS: returns a list of possible moves for the at position (x, y)
+    // EFFECTS: returns a list of possible possitions for the at position (x, y)
     // on the given board
-    public abstract List<Move> validMoves(BoardState boardState, Position pos);
+    public abstract List<Position> validPositions(BoardState boardState, Position pos);
 
     @Override
     public int hashCode() {
@@ -69,4 +68,15 @@ public abstract class Piece  {
     // board != null
     // EFFECTS: returns true if the position is empty, false otherwise
     protected boolean isEmptySquare(Position pos, BoardState boardState) { return boardState.getSquare(pos) == null; }
+
+    // REQUIRES: board != null
+    // EFFECTS: returns false if the position is occupied by the same colour or out
+    // of bounds, true otherwise
+    protected boolean isValidPosition(Position pos, BoardState boardState) {
+        if (pos.X < 0 || pos.X > 7 || pos.Y < 0 || pos.Y > 7)
+            return false;
+        if (isEmptySquare(pos, boardState))
+            return true;
+        return boardState.getSquare(pos).getColour() != COLOUR;
+    }
 }

@@ -2,46 +2,42 @@ package model.pieces;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import model.misc_vars.Colour;
-import model.misc_vars.MoveType;
-import model.move_tools.Move;
+import model.move_tools.BoardState;
 import model.move_tools.Position;
 
 public class Rook extends Piece {
 
     public Rook(Colour colour, Position pos) {
-        super(colour, "Rook", "R", pos);
-        canCastle = true;
+        super(colour, "Rook", "R");
     }
     
     @Override
-    public List<Move> validMoves(Board board) {
+    public List<Position> validPositions(BoardState boardState, Position pos) {
 
-        List<Move> validMoveList = new ArrayList<>();
+        List<Position> validPositionList = new ArrayList<>();
 
-        int[][] directions = { { -1, 0 }, // Up
-                { 1, 0 }, // Down
-                { 0, -1 }, // Left
-                { 0, 1 }, // Right
+        Position[] directions = {
+            new Position(0, 1), // Up
+            new Position(1, 0), // Right
+            new Position(0, -1), // Down
+            new Position(-1, 0), // Left
         };
 
-        for (int[] dir : directions) {
-            boolean continueSearch = true;
-            do {
-                Position newPos = new Position(this.getX() + dir[0], this.getY() + dir[1]);
-                if (super.isValidPosition(newPos, super.COLOUR, board)) {
-                    if (!super.isEmptySquare(newPos, board)) {
-                        validMoveList.add(new Move(this, newPos, true, MoveType.NORMAL));
-                        continueSearch = false; // Stop searching in this direction if the move is a capture
-                    } else {
-                        validMoveList.add(new Move(this, newPos, false, MoveType.NORMAL));
-                    }
-                } else {
-                    continueSearch = false; // Stop searching in this direction if the move is invalid
-                }
-            } while (continueSearch);
+        for (Position dir : directions) {
+            Position currentPos = pos;
+
+            // Explore in the current direction until an invalid move or capture is
+            // encountered
+            while (true) {
+                Position newPos = currentPos.add(dir);
+                if (!super.isValidPosition(newPos, boardState))
+                    break;
+                validPositionList.add(newPos);
+                if (!super.isEmptySquare(newPos, boardState))
+                    break;
+            }
         }
-        return validMoveList;
+        return validPositionList;
     }
 }

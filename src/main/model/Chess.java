@@ -2,26 +2,18 @@ package model;
 
 import java.util.ArrayList;
 import java.util.List;
-import model.misc_vars.Colour;
-import model.move_tools.Move;
+import model.move_tools.BoardState;
 
 public class Chess {
 
-    Board board;
-    List<Move> moves;
-    Colour currentTurn;
-    Boolean gameOver;
+    List<BoardState> history;
 
     public Chess() {
-        this.board = new Board();
-        this.moves = new ArrayList<>();
-        this.currentTurn = Colour.WHITE; // White starts first
-        this.gameOver = false;
+        history = new ArrayList<>();
+        startGame();
     }
 
     public boolean startGame() {
-        // Initialize the board with pieces
-        board.resetBoard();
-        return true; // Game started successfully
+        return true;
     }
 }

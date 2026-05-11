@@ -3,19 +3,17 @@ package model.pieces;
 import java.util.ArrayList;
 import java.util.List;
 import model.misc_vars.Colour;
-import model.misc_vars.MoveType;
 import model.move_tools.BoardState;
-import model.move_tools.Move;
 import model.move_tools.Position;
 
 public class Knight extends Piece {
 
-    public Knight(Colour colour, Position pos) { super(colour, "Knight", "N", pos); }
+    public Knight(Colour colour) { super(colour, "Knight", "N"); }
 
     @Override
-    public List<Move> validMoves(BoardState boardState) {
+    public List<Position> validPositions(BoardState boardState, Position pos) {
 
-        List<Move> validMoveList = new ArrayList<>();
+        List<Position> validPositionList = new ArrayList<>();
 
         Position[] knightMoves = {
                 new Position(-2, 1),
@@ -29,14 +27,11 @@ public class Knight extends Piece {
         };
 
         for (Position shift : knightMoves) {
-            Position newPos = this.pos.add(shift);
-            if (super.isValidPosition(newPos, super.COLOUR, boardState)) {
-                boolean isCapture = !super.isEmptySquare(newPos, boardState);
-                boolean isCheckMove = boardState.isCheckMove(this.COLOUR, new Move(this, newPos, false, false, MoveType.NORMAL));
-                validMoveList.add(new Move(this, newPos, isCapture, isCheckMove, MoveType.NORMAL));
-            }
+            Position newPos = pos.add(shift);
+            if (super.isValidPosition(newPos, boardState)) 
+                validPositionList.add(newPos);
         }
 
-        return validMoveList;
+        return validPositionList;
     }
 }
