@@ -8,7 +8,7 @@ import model.move_tools.Position;
 
 public class Bishop extends Piece {
 
-    public Bishop(Colour colour, Position pos) { super(colour, "Bishop", "B"); }
+    public Bishop(Colour colour) { super(colour, "Bishop", "B"); }
 
     @Override
     public List<Position> validPositions(BoardState boardState, Position pos) {

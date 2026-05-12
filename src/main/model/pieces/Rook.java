@@ -8,7 +8,7 @@ import model.move_tools.Position;
 
 public class Rook extends Piece {
 
-    public Rook(Colour colour, Position pos) {
+    public Rook(Colour colour) {
         super(colour, "Rook", "R");
     }
     

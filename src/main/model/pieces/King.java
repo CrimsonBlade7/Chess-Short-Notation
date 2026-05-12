@@ -8,7 +8,7 @@ import model.move_tools.Position;
 
 public class King extends Piece {
 
-    public King(Colour colour, Position pos) { super(colour, "King", "K"); }
+    public King(Colour colour) { super(colour, "King", "K"); }
 
     // EFFECTS: Returns a list of possible moves for the king piece
     @Override

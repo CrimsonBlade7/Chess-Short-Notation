@@ -64,19 +64,24 @@ public abstract class Piece {
         return true;
     }
 
-    // REQUIRES: pos is within the bounds of the board (0 <= x, y < 8)
-    // board != null
-    // EFFECTS: returns true if the position is empty, false otherwise
-    protected boolean isEmptySquare(Position pos, BoardState boardState) { return boardState.getSquare(pos) == null; }
+    // REQUIRES: board != null
+    // EFFECTS: returns false if out of bounds, otherwise returns true if the
+    // position is empty, false otherwise
+    protected boolean isEmptySquare(Position pos, BoardState boardState) {
+        if (!isInBounds(pos)) return false;
+        return boardState.getSquare(pos) == null;
+    }
 
     // REQUIRES: board != null
     // EFFECTS: returns false if the position is occupied by the same colour or out
     // of bounds, true otherwise
     protected boolean isValidPosition(Position pos, BoardState boardState) {
-        if (pos.X < 0 || pos.X > 7 || pos.Y < 0 || pos.Y > 7)
-            return false;
-        if (isEmptySquare(pos, boardState))
-            return true;
+        if (!isInBounds(pos)) return false;
+            if (isEmptySquare(pos, boardState))
+                return true;
         return boardState.getSquare(pos).getColour() != COLOUR;
     }
+
+    // EFFECTS: returns true if the position is in bounds
+    private boolean isInBounds(Position pos) { return 0 <= pos.X || pos.X < 8 || 0 <= pos.Y || pos.Y < 8; }
 }

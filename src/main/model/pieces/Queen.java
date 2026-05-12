@@ -8,7 +8,7 @@ import model.move_tools.Position;
 
 public class Queen extends Piece {
 
-    public Queen(Colour colour, Position pos) { super(colour, "Queen", "Q"); }
+    public Queen(Colour colour) { super(colour, "Queen", "Q"); }
 
     @Override
     public List<Position> validPositions(BoardState boardState, Position pos) {
