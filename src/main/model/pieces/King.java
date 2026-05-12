@@ -1,7 +1,7 @@
 package model.pieces;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import model.misc_vars.Colour;
 import model.move_tools.BoardState;
 import model.move_tools.Position;
@@ -12,9 +12,9 @@ public class King extends Piece {
 
     // EFFECTS: Returns a list of possible moves for the king piece
     @Override
-    public List<Position> validPositions(BoardState boardState, Position pos) {
+    public Set<Position> validPositions(BoardState boardState, Position pos) {
 
-        List<Position> validPositionList = new ArrayList<>();
+        Set<Position> validPositionSet = new HashSet<>();
 
         for (int y = -1; y <= 1; y++) {
             for (int x = -1; x <= 1; x++) {
@@ -22,7 +22,7 @@ public class King extends Piece {
                     continue;
                 Position newPos = pos.add(new Position(x, y));
                 if (!super.isValidPosition(newPos, boardState)) break;
-                validPositionList.add(newPos);
+                validPositionSet.add(newPos);
                 if (!super.isEmptySquare(newPos, boardState)) break;
             }
         }
@@ -31,11 +31,11 @@ public class King extends Piece {
         int y = (this.COLOUR == Colour.WHITE) ? 0 : 7;
         if (pos.X == 4 && pos.Y == y) {
             if (kingsideCastleValid(boardState)) 
-                validPositionList.add(new Position(pos.Y, 6));
+                validPositionSet.add(new Position(pos.Y, 6));
             if (queensideCastleValid(boardState)) 
-                validPositionList.add(new Position(pos.Y, 2));
+                validPositionSet.add(new Position(pos.Y, 2));
         }
-        return validPositionList;
+        return validPositionSet;
     }
 
     // REQUIRES: board != null

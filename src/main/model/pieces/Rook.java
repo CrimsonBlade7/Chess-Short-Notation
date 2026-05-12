@@ -1,7 +1,7 @@
 package model.pieces;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import model.misc_vars.Colour;
 import model.move_tools.BoardState;
 import model.move_tools.Position;
@@ -13,9 +13,9 @@ public class Rook extends Piece {
     }
     
     @Override
-    public List<Position> validPositions(BoardState boardState, Position pos) {
+    public Set<Position> validPositions(BoardState boardState, Position pos) {
 
-        List<Position> validPositionList = new ArrayList<>();
+        Set<Position> validPositionSet = new HashSet<>();
 
         Position[] directions = {
             new Position(0, 1), // Up
@@ -33,11 +33,11 @@ public class Rook extends Piece {
                 Position newPos = currentPos.add(dir);
                 if (!super.isValidPosition(newPos, boardState))
                     break;
-                validPositionList.add(newPos);
+                validPositionSet.add(newPos);
                 if (!super.isEmptySquare(newPos, boardState))
                     break;
             }
         }
-        return validPositionList;
+        return validPositionSet;
     }
 }

@@ -1,6 +1,6 @@
 package model.pieces;
 
-import java.util.List;
+import java.util.Set;
 import model.misc_vars.Colour;
 import model.move_tools.BoardState;
 import model.move_tools.Position;
@@ -26,7 +26,7 @@ public abstract class Piece {
     // board != null
     // EFFECTS: returns a list of possible possitions for the at position (x, y)
     // on the given board
-    public abstract List<Position> validPositions(BoardState boardState, Position pos);
+    public abstract Set<Position> validPositions(BoardState boardState, Position pos);
 
     @Override
     public int hashCode() {
@@ -68,7 +68,8 @@ public abstract class Piece {
     // EFFECTS: returns false if out of bounds, otherwise returns true if the
     // position is empty, false otherwise
     protected boolean isEmptySquare(Position pos, BoardState boardState) {
-        if (!isInBounds(pos)) return false;
+        if (!isInBounds(pos))
+            return false;
         return boardState.getSquare(pos) == null;
     }
 
@@ -76,9 +77,10 @@ public abstract class Piece {
     // EFFECTS: returns false if the position is occupied by the same colour or out
     // of bounds, true otherwise
     protected boolean isValidPosition(Position pos, BoardState boardState) {
-        if (!isInBounds(pos)) return false;
-            if (isEmptySquare(pos, boardState))
-                return true;
+        if (!isInBounds(pos))
+            return false;
+        if (isEmptySquare(pos, boardState))
+            return true;
         return boardState.getSquare(pos).getColour() != COLOUR;
     }
 

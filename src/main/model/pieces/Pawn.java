@@ -1,7 +1,7 @@
 package model.pieces;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import model.misc_vars.Colour;
 import model.move_tools.BoardState;
 import model.move_tools.Position;
@@ -11,9 +11,9 @@ public class Pawn extends Piece {
     public Pawn(Colour colour, Position pos) { super(colour, "Pawn", "P"); }
 
     @Override
-    public List<Position> validPositions(BoardState boardState, Position pos) {
+    public Set<Position> validPositions(BoardState boardState, Position pos) {
 
-        List<Position> validPositionList = new ArrayList<>();
+        Set<Position> validPositionSet = new HashSet<>();
 
         int dir = getColour() == Colour.WHITE ? 1 : -1; // Determine direction based on colour
         int startingRank = getColour() == Colour.WHITE ? 1 : 6; // Starting rank for pawns
@@ -23,7 +23,7 @@ public class Pawn extends Piece {
         if (pos.Y == startingRank
                 && super.isEmptySquare(new Position(pos.X, pos.Y + 1 * dir), boardState)
                 && super.isEmptySquare(newPos, boardState)) {
-            validPositionList.add(newPos);
+            validPositionSet.add(newPos);
         }
 
         // 3 squares in front of the pawn
@@ -32,19 +32,19 @@ public class Pawn extends Piece {
             // one step forward
             if (i == 0) {
                 if (super.isEmptySquare(newPos, boardState))
-                    validPositionList.add(newPos);
+                    validPositionSet.add(newPos);
             }
             // diagonal captures
             else if (super.isValidPosition(newPos, boardState) && !super.isEmptySquare(newPos, boardState))
-                validPositionList.add(newPos);
+                validPositionSet.add(newPos);
             // enpassant
             else if (super.isEmptySquare(newPos, boardState) // new square is empty
                     && newPos.Y == pos.Y + 4 * dir // correct starting rank
                     && boardState.getSquare(newPos.add(new Position(0, -1 * dir))) instanceof Pawn pawn // target square contains a pawn
                     && pawn.COLOUR != this.COLOUR) // the pawn is the opposite colour
-                validPositionList.add(newPos);
+                validPositionSet.add(newPos);
         }
 
-        return validPositionList;
+        return validPositionSet;
     }
 }
