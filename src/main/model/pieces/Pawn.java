@@ -8,7 +8,7 @@ import model.move_tools.Position;
 
 public class Pawn extends Piece {
 
-    public Pawn(Colour colour, Position pos) { super(colour, "Pawn", "P"); }
+    public Pawn(Colour colour) { super(colour, "Pawn", "P"); }
 
     @Override
     public Set<Position> validPositions(BoardState boardState, Position pos) {

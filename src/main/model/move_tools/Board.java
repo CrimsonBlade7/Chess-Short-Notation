@@ -16,14 +16,14 @@ public class Board {
         board = new Piece[8][8];
 
         // Initialize white pieces
-        Rook whiteRook1 = new Rook(Colour.WHITE, new Position(0, 0));
-        Knight whiteKnight1 = new Knight(Colour.WHITE, new Position(1, 0));
-        Bishop whiteBishop1 = new Bishop(Colour.WHITE, new Position(2, 0));
-        Queen whiteQueen = new Queen(Colour.WHITE, new Position(3, 0));
-        King whiteKing = new King(Colour.WHITE, new Position(4, 0));
-        Bishop whiteBishop2 = new Bishop(Colour.WHITE, new Position(5, 0));
-        Knight whiteKnight2 = new Knight(Colour.WHITE, new Position(6, 0));
-        Rook whiteRook2 = new Rook(Colour.WHITE, new Position(7, 0));
+        Rook whiteRook1 = new Rook(Colour.WHITE);
+        Knight whiteKnight1 = new Knight(Colour.WHITE);
+        Bishop whiteBishop1 = new Bishop(Colour.WHITE);
+        Queen whiteQueen = new Queen(Colour.WHITE);
+        King whiteKing = new King(Colour.WHITE);
+        Bishop whiteBishop2 = new Bishop(Colour.WHITE);
+        Knight whiteKnight2 = new Knight(Colour.WHITE);
+        Rook whiteRook2 = new Rook(Colour.WHITE);
 
         board[0][0] = whiteRook1;
         board[0][1] = whiteKnight1;
@@ -35,21 +35,21 @@ public class Board {
         board[0][7] = whiteRook2;
 
         for (int i = 0; i < 8; i++) {
-            Pawn whitePawn = new Pawn(Colour.WHITE, new Position(i, 1));
-            Pawn blackPawn = new Pawn(Colour.BLACK, new Position(i, 6));
+            Pawn whitePawn = new Pawn(Colour.WHITE);
+            Pawn blackPawn = new Pawn(Colour.BLACK);
             board[1][i] = whitePawn;
             board[6][i] = blackPawn;
         }
 
         // Initialize black pieces
-        Rook blackRook1 = new Rook(Colour.BLACK, new Position(0, 7));
-        Knight blackKnight1 = new Knight(Colour.BLACK, new Position(1, 7));
-        Bishop blackBishop1 = new Bishop(Colour.BLACK, new Position(2, 7));
-        Queen blackQueen = new Queen(Colour.BLACK, new Position(3, 7));
-        King blackKing = new King(Colour.BLACK, new Position(4, 7));
-        Bishop blackBishop2 = new Bishop(Colour.BLACK, new Position(5, 7));
-        Knight blackKnight2 = new Knight(Colour.BLACK, new Position(6, 7));
-        Rook blackRook2 = new Rook(Colour.BLACK, new Position(7, 7));
+        Rook blackRook1 = new Rook(Colour.BLACK);
+        Knight blackKnight1 = new Knight(Colour.BLACK);
+        Bishop blackBishop1 = new Bishop(Colour.BLACK);
+        Queen blackQueen = new Queen(Colour.BLACK);
+        King blackKing = new King(Colour.BLACK);
+        Bishop blackBishop2 = new Bishop(Colour.BLACK);
+        Knight blackKnight2 = new Knight(Colour.BLACK);
+        Rook blackRook2 = new Rook(Colour.BLACK);
 
         board[7][0] = blackRook1;
         board[7][1] = blackKnight1;
