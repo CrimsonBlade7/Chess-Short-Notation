@@ -77,6 +77,11 @@ public class BoardState {
         return !isInCheck(colour) && MoveValidation.legalMoves(this, colour).isEmpty();
     }
 
+    // EFFECTS: returns true if the fifty-move rule can be claimed
+    public boolean isFiftyMoveRuleDraw() {
+        return halfMoveClock >= 100;
+    }
+
     // REQUIRES: pos is within the bounds of the board
     // EFFECTS: returns the piece at pos, or null if the square is empty
     public Piece getSquare(Position pos) { return board.getSquare(pos); }
@@ -180,6 +185,22 @@ public class BoardState {
         return (castlingRights & (colour == Colour.WHITE ? WQ : BQ)) != 0;
     }
 
+    // EFFECTS: returns the parts of the position that matter for repetition:
+    // pieces, side to move, castling rights, and en passant target
+    public String repetitionKey() {
+        StringBuilder key = new StringBuilder();
+        for (int y = 0; y < 8; y++) {
+            for (int x = 0; x < 8; x++) {
+                Piece piece = board.getSquare(new Position(x, y));
+                key.append(pieceKey(piece));
+            }
+        }
+        key.append(' ').append(currentTurn);
+        key.append(' ').append(castlingRights);
+        key.append(' ').append(enpassantTarget == null ? "-" : enpassantTarget.X + "," + enpassantTarget.Y);
+        return key.toString();
+    }
+
     // REQUIRES: move != null
     // EFFECTS: returns the captured piece for move, or null
     private Piece capturedPiece(Move move) {
@@ -242,6 +263,14 @@ public class BoardState {
             int targetY = (move.START_POS_1.Y + move.END_POS_1.Y) / 2;
             enpassantTarget = new Position(move.START_POS_1.X, targetY);
         }
+    }
+
+    // EFFECTS: returns a compact piece code for repetition tracking
+    private String pieceKey(Piece piece) {
+        if (piece == null)
+            return ".";
+        String symbol = piece.getSymbol();
+        return piece.getColour() == Colour.WHITE ? symbol : symbol.toLowerCase();
     }
 
     // EFFECTS: returns the board

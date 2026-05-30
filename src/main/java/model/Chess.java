@@ -48,7 +48,10 @@ public class Chess {
     // EFFECTS: returns true if the current side to move is checkmated or stalemated
     public boolean isGameOver() {
         Colour turn = boardState.getCurrentTurn();
-        return boardState.isCheckmate(turn) || boardState.isStalemate(turn);
+        return boardState.isCheckmate(turn)
+                || boardState.isStalemate(turn)
+                || boardState.isFiftyMoveRuleDraw()
+                || isThreefoldRepetition();
     }
 
     // EFFECTS: returns a human-readable status for the current game state
@@ -58,9 +61,24 @@ public class Chess {
             return "Checkmate. " + BoardState.opposite(turn) + " wins.";
         if (boardState.isStalemate(turn))
             return "Stalemate.";
+        if (boardState.isFiftyMoveRuleDraw())
+            return "Draw by fifty-move rule.";
+        if (isThreefoldRepetition())
+            return "Draw by threefold repetition.";
         if (boardState.isInCheck(turn))
             return turn + " is in check.";
         return turn + " to move.";
+    }
+
+    // EFFECTS: returns true if the current position has occurred at least three times
+    public boolean isThreefoldRepetition() {
+        String currentKey = boardState.repetitionKey();
+        int repetitions = 0;
+        for (BoardState state : history) {
+            if (state.repetitionKey().equals(currentKey))
+                repetitions++;
+        }
+        return repetitions >= 3;
     }
 
     // EFFECTS: returns the current board state

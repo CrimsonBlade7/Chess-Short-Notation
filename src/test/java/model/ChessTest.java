@@ -5,9 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import model.misc_vars.Colour;
 import model.move_tools.BoardState;
 import model.move_tools.NotationConverter;
-import model.move_tools.Position;
 import model.pieces.King;
-import model.pieces.Pawn;
 import model.pieces.Queen;
 import model.pieces.Rook;
 import org.junit.jupiter.api.Test;
@@ -96,5 +94,71 @@ public class ChessTest {
         assertFalse(chess.makeMove("e4"));
 
         assertEquals(2, chess.getHistory().size());
+    }
+
+    // EFFECTS: verifies the fifty-move rule ends the game as a draw
+    @Test
+    void detectsFiftyMoveRuleDraw() {
+        Chess chess = new Chess();
+        chess.getBoardState().setHalfMoveClock(100);
+
+        assertTrue(chess.isGameOver());
+        assertEquals("Draw by fifty-move rule.", chess.status());
+    }
+
+    // EFFECTS: verifies repeated positions are not draws until the third occurrence
+    @Test
+    void detectsThreefoldRepetitionOnlyOnThirdOccurrence() {
+        Chess chess = new Chess();
+
+        repeatKnightCycle(chess);
+        assertFalse(chess.isThreefoldRepetition());
+        assertFalse(chess.isGameOver());
+
+        repeatKnightCycle(chess);
+        assertTrue(chess.isThreefoldRepetition());
+        assertTrue(chess.isGameOver());
+        assertEquals("Draw by threefold repetition.", chess.status());
+    }
+
+    // EFFECTS: verifies repetition includes side to move
+    @Test
+    void repetitionKeyIncludesSideToMove() {
+        BoardState whiteToMove = kingsOnlyState();
+        BoardState blackToMove = kingsOnlyState();
+        blackToMove.setCurrentTurn(Colour.BLACK);
+
+        assertNotEquals(whiteToMove.repetitionKey(), blackToMove.repetitionKey());
+    }
+
+    // EFFECTS: verifies repetition includes castling rights
+    @Test
+    void repetitionKeyIncludesCastlingRights() {
+        BoardState canCastle = kingsOnlyState();
+        BoardState cannotCastle = kingsOnlyState();
+        canCastle.getBoard().setSquare(new Rook(Colour.WHITE), NotationConverter.algebraicToPosition("h1"));
+        canCastle.setCastlingRights(BoardState.WK);
+        cannotCastle.setCastlingRights((byte) 0);
+
+        assertNotEquals(canCastle.repetitionKey(), cannotCastle.repetitionKey());
+    }
+
+    // MODIFIES: chess
+    // EFFECTS: moves both knights out and back to repeat the initial position
+    private void repeatKnightCycle(Chess chess) {
+        assertTrue(chess.makeMove("Nf3"));
+        assertTrue(chess.makeMove("Nf6"));
+        assertTrue(chess.makeMove("Ng1"));
+        assertTrue(chess.makeMove("Ng8"));
+    }
+
+    // EFFECTS: returns a minimal legal board with only kings
+    private BoardState kingsOnlyState() {
+        BoardState state = new BoardState();
+        state.getBoard().clearBoard();
+        state.getBoard().setSquare(new King(Colour.WHITE), NotationConverter.algebraicToPosition("e1"));
+        state.getBoard().setSquare(new King(Colour.BLACK), NotationConverter.algebraicToPosition("e8"));
+        state.setCastlingRights((byte) 0);
+        return state;
     }
 }
