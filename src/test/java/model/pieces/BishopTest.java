@@ -1,4 +1,4 @@
-package test.pieces;
+package model.pieces;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -6,8 +6,6 @@ import java.util.Set;
 import model.misc_vars.Colour;
 import model.move_tools.BoardState;
 import model.move_tools.Position;
-import model.pieces.Bishop;
-import model.pieces.Pawn;
 import org.junit.jupiter.api.Test;
 
 public class BishopTest {

@@ -1,10 +1,8 @@
-package test;
+package model.move_tools;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 import model.misc_vars.Colour;
-import model.move_tools.Board;
-import model.move_tools.Position;
 import model.pieces.King;
 import model.pieces.Pawn;
 import model.pieces.Queen;

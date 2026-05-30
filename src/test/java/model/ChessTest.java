@@ -1,8 +1,7 @@
-package test;
+package model;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import model.Chess;
 import model.misc_vars.Colour;
 import model.move_tools.BoardState;
 import model.move_tools.NotationConverter;

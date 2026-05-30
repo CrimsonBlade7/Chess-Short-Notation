@@ -1,14 +1,10 @@
-package test;
+package model.move_tools;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 import model.exceptions.ImpossibleMoveStateException;
 import model.misc_vars.Colour;
 import model.misc_vars.MoveType;
-import model.move_tools.BoardState;
-import model.move_tools.Move;
-import model.move_tools.NotationConverter;
-import model.move_tools.Position;
 import model.pieces.King;
 import model.pieces.Pawn;
 import model.pieces.Queen;
