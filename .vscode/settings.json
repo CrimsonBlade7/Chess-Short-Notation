@@ -1,13 +1,10 @@
 {
     "java.format.settings.url": ".vscode/java-formatter.xml",
     "java.project.sourcePaths": [
-        "src/main",
-        "src/test"
+        "src"
     ],
     "java.project.referencedLibraries": [
-        "lib/junit-platform-console-standalone-1.9.3.jar",
-        "lib/junit-jupiter-api-5.9.3.jar",
-        "lib/junit-jupiter-engine-5.9.3.jar"
+        "lib/**/*.jar"
     ],
     "java.project.outputPath": "out",
     "java.configuration.runtimes": [
