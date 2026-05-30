@@ -1,0 +1,29 @@
+plugins {
+    id 'application'
+    id 'java'
+}
+
+group = 'chess.shortnotation'
+version = '1.0.0'
+
+repositories {
+    mavenCentral()
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.3'
+}
+
+application {
+    mainClass = 'ui.Main'
+}
+
+test {
+    useJUnitPlatform()
+}
