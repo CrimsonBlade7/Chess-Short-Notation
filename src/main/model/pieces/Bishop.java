@@ -1,19 +1,22 @@
 package model.pieces;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import model.misc_vars.Colour;
 import model.move_tools.BoardState;
 import model.move_tools.Position;
 
 public class Bishop extends Piece {
 
-    public Bishop(Colour colour, Position pos) { super(colour, "Bishop", "B"); }
+    // EFFECTS: creates a bishop with the given colour
+    public Bishop(Colour colour) { super(colour, "Bishop", "B"); }
 
+    // REQUIRES: boardState != null and pos is within the board
+    // EFFECTS: returns pseudo-legal bishop moves from pos
     @Override
-    public List<Position> validPositions(BoardState boardState, Position pos) {
+    public Set<Position> validPositions(BoardState boardState, Position pos) {
 
-        List<Position> validPositionList = new ArrayList<>();
+        Set<Position> validPositionSet = new HashSet<>();
 
         Position[] directions = {
                 new Position(-1, 1), // Up-left
@@ -31,11 +34,12 @@ public class Bishop extends Piece {
                 Position newPos = currentPos.add(dir);
                 if (!super.isValidPosition(newPos, boardState))
                     break;
-                validPositionList.add(newPos);
+                validPositionSet.add(newPos);
                 if (!super.isEmptySquare(newPos, boardState))
                     break;
+                currentPos = newPos;
             }
         }
-        return validPositionList;
+        return validPositionSet;
     }
 }

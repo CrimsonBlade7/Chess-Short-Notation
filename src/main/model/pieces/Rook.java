@@ -1,21 +1,22 @@
 package model.pieces;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import model.misc_vars.Colour;
 import model.move_tools.BoardState;
 import model.move_tools.Position;
 
 public class Rook extends Piece {
 
-    public Rook(Colour colour, Position pos) {
-        super(colour, "Rook", "R");
-    }
+    // EFFECTS: creates a rook with the given colour
+    public Rook(Colour colour) { super(colour, "Rook", "R"); }
     
+    // REQUIRES: boardState != null and pos is within the board
+    // EFFECTS: returns pseudo-legal rook moves from pos
     @Override
-    public List<Position> validPositions(BoardState boardState, Position pos) {
+    public Set<Position> validPositions(BoardState boardState, Position pos) {
 
-        List<Position> validPositionList = new ArrayList<>();
+        Set<Position> validPositionSet = new HashSet<>();
 
         Position[] directions = {
             new Position(0, 1), // Up
@@ -33,11 +34,12 @@ public class Rook extends Piece {
                 Position newPos = currentPos.add(dir);
                 if (!super.isValidPosition(newPos, boardState))
                     break;
-                validPositionList.add(newPos);
+                validPositionSet.add(newPos);
                 if (!super.isEmptySquare(newPos, boardState))
                     break;
+                currentPos = newPos;
             }
         }
-        return validPositionList;
+        return validPositionSet;
     }
 }

@@ -16,7 +16,8 @@ public class Move {
     public final Piece PROMOTION_PIECE;
     public final MoveType MOVE_TYPE;
 
-    // EFFECTS: constructs a Move object for normal moves
+    // REQUIRES: piece, startPos, endPos, moveType, and boardState are not null
+    // EFFECTS: constructs a Move object for moves involving one moving piece
     public Move(Piece piece, Position startPos, Position endPos, MoveType moveType, BoardState boardState) {
         PIECE_1 = piece;
         START_POS_1 = startPos;
@@ -30,7 +31,8 @@ public class Move {
         PROMOTION_PIECE = null;
     }
 
-    // EFFECTS: constructs a Move object for special moves
+    // REQUIRES: piece1, startPos1, endPos1, moveType, and boardState are not null
+    // EFFECTS: constructs a Move object for moves with secondary pieces or promotion
     public Move(Piece piece1, Position startPos1, Position endPos1, Piece piece2, Position startPos2,
             Position endPos2, Piece promotionPiece, MoveType moveType, BoardState boardState) {
         PIECE_1 = piece1;
