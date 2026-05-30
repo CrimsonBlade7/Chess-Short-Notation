@@ -1,7 +1,8 @@
 {
     "java.format.settings.url": ".vscode/java-formatter.xml",
     "java.project.sourcePaths": [
-        "src"
+        "src/main",
+        "src/test"
     ],
     "java.project.referencedLibraries": [
         "lib/**/*.jar"
@@ -18,5 +19,8 @@
         "editor.detectIndentation": false
     },
     "java.server.launchMode": "Standard",
-    "java.help.firstView": "gettingStarted"
+    "java.help.firstView": "gettingStarted",
+    "java.eclipse.downloadSources": true,
+    "java.checkstyle.enabled": false,
+    "java.semanticHighlighting.enabled": true
 }
