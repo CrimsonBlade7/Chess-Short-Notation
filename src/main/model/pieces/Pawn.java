@@ -18,32 +18,27 @@ public class Pawn extends Piece {
 
         Set<Position> validPositionSet = new HashSet<>();
 
-        int dir = getColour() == Colour.WHITE ? 1 : -1; // Determine direction based on colour
-        int startingRank = getColour() == Colour.WHITE ? 1 : 6; // Starting rank for pawns
+        int dir = getColour() == Colour.WHITE ? 1 : -1;
+        int startingRank = getColour() == Colour.WHITE ? 1 : 6;
 
-        // 2 squares on starting rank
         Position newPos = new Position(pos.X, pos.Y + 2 * dir);
         if (pos.Y == startingRank
-                && super.isEmptySquare(new Position(pos.X, pos.Y + 1 * dir), boardState)
+                && super.isEmptySquare(new Position(pos.X, pos.Y + dir), boardState)
                 && super.isEmptySquare(newPos, boardState)) {
             validPositionSet.add(newPos);
         }
 
-        // one forward square, two capture squares, and possible en passant target
         for (int i = -1; i <= 1; i++) {
-            newPos = new Position(pos.X + i, pos.Y + 1 * dir);
-            // one step forward
+            newPos = new Position(pos.X + i, pos.Y + dir);
             if (i == 0) {
                 if (super.isEmptySquare(newPos, boardState))
                     validPositionSet.add(newPos);
+            } else if (super.isValidPosition(newPos, boardState) && !super.isEmptySquare(newPos, boardState)) {
+                validPositionSet.add(newPos);
+            } else if (super.isEmptySquare(newPos, boardState)
+                    && newPos.equals(boardState.getEnpassantTarget())) {
+                validPositionSet.add(newPos);
             }
-            // diagonal captures
-            else if (super.isValidPosition(newPos, boardState) && !super.isEmptySquare(newPos, boardState))
-                validPositionSet.add(newPos);
-            // enpassant
-            else if (super.isEmptySquare(newPos, boardState)
-                    && newPos.equals(boardState.getEnpassantTarget()))
-                validPositionSet.add(newPos);
         }
 
         return validPositionSet;

@@ -19,17 +19,14 @@ public class Bishop extends Piece {
         Set<Position> validPositionSet = new HashSet<>();
 
         Position[] directions = {
-                new Position(-1, 1), // Up-left
-                new Position(1, 1), // Up-right
-                new Position(-1, -1), // Down-left
-                new Position(1, -1) // Down-right
+                new Position(-1, 1),
+                new Position(1, 1),
+                new Position(-1, -1),
+                new Position(1, -1)
         };
 
         for (Position dir : directions) {
             Position currentPos = pos;
-
-            // Explore in the current direction until an invalid move or capture is
-            // encountered
             while (true) {
                 Position newPos = currentPos.add(dir);
                 if (!super.isValidPosition(newPos, boardState))

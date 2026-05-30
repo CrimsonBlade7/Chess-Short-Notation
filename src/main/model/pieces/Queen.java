@@ -19,21 +19,18 @@ public class Queen extends Piece {
         Set<Position> validPositionSet = new HashSet<>();
 
         Position[] directions = {
-            new Position(0, 1), // Up
-            new Position(1, 1), // Up-right
-            new Position(1, 0), // Right
-            new Position(1, -1), // Right-down
-            new Position(0, -1), // Down
-            new Position(-1, -1), // Down-left
-            new Position(-1, 0), // Left
-            new Position(-1, 1), // Up-left
+                new Position(0, 1),
+                new Position(1, 1),
+                new Position(1, 0),
+                new Position(1, -1),
+                new Position(0, -1),
+                new Position(-1, -1),
+                new Position(-1, 0),
+                new Position(-1, 1),
         };
 
         for (Position dir : directions) {
             Position currentPos = pos;
-
-            // Explore in the current direction until an invalid move or capture is
-            // encountered
             while (true) {
                 Position newPos = currentPos.add(dir);
                 if (!super.isValidPosition(newPos, boardState))

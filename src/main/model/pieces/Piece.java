@@ -59,15 +59,15 @@ public abstract class Piece {
         if (NAME == null) {
             if (other.NAME != null)
                 return false;
-        }
-        else if (!NAME.equals(other.NAME))
+        } else if (!NAME.equals(other.NAME)) {
             return false;
+        }
         if (SYMBOL == null) {
             if (other.SYMBOL != null)
                 return false;
-        }
-        else if (!SYMBOL.equals(other.SYMBOL))
+        } else if (!SYMBOL.equals(other.SYMBOL)) {
             return false;
+        }
         return true;
     }
 
