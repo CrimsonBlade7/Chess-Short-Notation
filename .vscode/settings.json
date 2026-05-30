@@ -17,5 +17,7 @@
     "[java]": {
         "editor.insertSpaces": true,
         "editor.detectIndentation": false
-    }
+    },
+    "java.server.launchMode": "Standard",
+    "java.help.firstView": "gettingStarted"
 }
